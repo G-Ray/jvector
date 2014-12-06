@@ -19,6 +19,7 @@ public class UI extends JFrame {
 
     private JLabel mousePositionLabel;
     private ArrayList<Point> points;
+    private Point movingPoint;
 
     public UI() {
         points = new ArrayList<Point>();
@@ -43,8 +44,7 @@ public class UI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("point");
-                Point p = new Point(300, 80);
-                points.add(p);
+                movingPoint = new Point();
             }
         };
 
@@ -71,8 +71,6 @@ public class UI extends JFrame {
 
     private class Canvas extends JPanel implements MouseMotionListener, MouseListener {
 
-        private Point movingPoint;
-
         public Canvas() {
             addMouseMotionListener(this);
             addMouseListener(this);
@@ -80,7 +78,7 @@ public class UI extends JFrame {
 
         @Override
         public void mouseDragged(MouseEvent mouseEvent) {
-            if(movingPoint!=null) movingPoint.setLocation(mouseEvent.getX(), mouseEvent.getY());
+            if(movingPoint != null) movingPoint.setLocation(mouseEvent.getX(), mouseEvent.getY());
             mousePositionLabel.setText(Integer.toString(mouseEvent.getX()) + ":" + Integer.toString(mouseEvent.getY()));
             repaint();
         }
@@ -88,7 +86,7 @@ public class UI extends JFrame {
         @Override
         public void mouseMoved(MouseEvent mouseEvent) {
             mousePositionLabel.setText(Integer.toString(mouseEvent.getX()) + ":" + Integer.toString(mouseEvent.getY()));
-            if(movingPoint != null) pointBtn.setLocation(mouseEvent.getX(), mouseEvent.getY());
+            if(movingPoint != null) movingPoint.setLocation(mouseEvent.getX(), mouseEvent.getY());
             repaint();
         }
 
@@ -96,6 +94,9 @@ public class UI extends JFrame {
             super.paintComponent(g);
             System.out.println("PAINT");
             Graphics2D g2 = (Graphics2D) g;
+
+            if(movingPoint != null)
+                g2.drawOval(movingPoint.getX()-Point.width/2, movingPoint.getY()-Point.height/2,Point.width, Point.height);
 
             for(Point p : points) {
                 g2.drawOval(p.getX()-Point.width/2, p.getY()-Point.height/2, Point.width, Point.height);
@@ -110,6 +111,7 @@ public class UI extends JFrame {
 
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
+            if(movingPoint != null) points.add(movingPoint);
             for(Point p : points) {
                 if((Math.abs(mouseEvent.getX() - p.getX()) <= Point.width)
                         && (Math.abs(mouseEvent.getY() - p.getY()) <= Point.height))
@@ -118,6 +120,7 @@ public class UI extends JFrame {
                     movingPoint = p;
                 }
             }
+            repaint();
         }
 
         @Override
