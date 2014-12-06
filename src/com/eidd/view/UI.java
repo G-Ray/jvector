@@ -1,11 +1,10 @@
 package com.eidd.view;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
+import com.eidd.graphics.Point;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,12 +18,18 @@ public class UI extends JFrame {
                     lineBtn;
 
     private JLabel mousePositionLabel;
+    private ArrayList<Point> points;
 
     public UI() {
+        points = new ArrayList<Point>();
+
         setTitle("Jvector");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setPreferredSize(new Dimension(800, 800));
+        setVisible(true);
 
         JMenuBar menu = new JMenuBar();
+        final Canvas canvas = new Canvas();
 
         pointBtn = new JButton("Point");
         lineBtn = new JButton("Line");
@@ -32,19 +37,24 @@ public class UI extends JFrame {
         mousePositionLabel = new JLabel();
 
         pointBtn.setEnabled(true);
-        lineBtn.setEnabled(false);
+        lineBtn.setEnabled(true);
 
         ActionListener pointListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("point");
+                Point p = new Point(300, 80);
+                points.add(p);
             }
         };
 
         ActionListener lineListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("point");
+                System.out.println("line");
+                for(Point p : points) {
+                    System.out.println(p.getX());
+                }
             }
         };
 
@@ -56,31 +66,73 @@ public class UI extends JFrame {
         menu.add(mousePositionLabel);
         setJMenuBar(menu);
 
-        Canvas canvas = new Canvas();
         setContentPane(canvas);
     }
 
-    private class Canvas extends JPanel implements MouseMotionListener {
+    private class Canvas extends JPanel implements MouseMotionListener, MouseListener {
+
+        private Point movingPoint;
 
         public Canvas() {
             addMouseMotionListener(this);
+            addMouseListener(this);
         }
 
         @Override
-        public void mouseDragged(MouseEvent arg0) {
-
+        public void mouseDragged(MouseEvent mouseEvent) {
+            if(movingPoint!=null) movingPoint.setLocation(mouseEvent.getX(), mouseEvent.getY());
+            mousePositionLabel.setText(Integer.toString(mouseEvent.getX()) + ":" + Integer.toString(mouseEvent.getY()));
+            repaint();
         }
 
         @Override
-        public void mouseMoved(MouseEvent arg0) {
-            mousePositionLabel.setText(Integer.toString(arg0.getX()) + ":" + Integer.toString(arg0.getY()));
+        public void mouseMoved(MouseEvent mouseEvent) {
+            mousePositionLabel.setText(Integer.toString(mouseEvent.getX()) + ":" + Integer.toString(mouseEvent.getY()));
+            if(movingPoint != null) pointBtn.setLocation(mouseEvent.getX(), mouseEvent.getY());
+            repaint();
         }
 
         public void paint(Graphics g) {
+            super.paintComponent(g);
             System.out.println("PAINT");
             Graphics2D g2 = (Graphics2D) g;
-            g2.drawOval(50, 50, 5, 5);
-            g2.fillOval(50, 50, 5, 5);
+
+            for(Point p : points) {
+                g2.drawOval(p.getX()-Point.width/2, p.getY()-Point.height/2, Point.width, Point.height);
+                g2.fillOval(p.getX()-Point.width/2, p.getY()-Point.height/2, Point.width, Point.height);
+            }
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent mouseEvent) {
+
+        }
+
+        @Override
+        public void mousePressed(MouseEvent mouseEvent) {
+            for(Point p : points) {
+                if((Math.abs(mouseEvent.getX() - p.getX()) <= Point.width)
+                        && (Math.abs(mouseEvent.getY() - p.getY()) <= Point.height))
+                {
+                    System.out.println("TOUCHE");
+                    movingPoint = p;
+                }
+            }
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent mouseEvent) {
+            movingPoint = null;
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent mouseEvent) {
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent mouseEvent) {
+
         }
     }
 
