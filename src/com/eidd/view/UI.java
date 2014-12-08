@@ -1,9 +1,11 @@
 package com.eidd.view;
 
 import com.eidd.graphics.Point;
+import com.eidd.graphics.Segment;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -15,14 +17,17 @@ import javax.swing.JPanel;
 public class UI extends JFrame {
 
     private JButton pointBtn,
-                    lineBtn;
+                    segmentBtn;
 
     private JLabel mousePositionLabel;
     private ArrayList<Point> points;
+    private ArrayList<Segment> segments;
     private Point movingPoint;
+    private Segment movingSegment;
 
     public UI() {
         points = new ArrayList<Point>();
+        segments = new ArrayList<Segment>();
 
         setTitle("Jvector");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -33,12 +38,12 @@ public class UI extends JFrame {
         final Canvas canvas = new Canvas();
 
         pointBtn = new JButton("Point");
-        lineBtn = new JButton("Line");
+        segmentBtn = new JButton("Segment");
 
         mousePositionLabel = new JLabel();
 
         pointBtn.setEnabled(true);
-        lineBtn.setEnabled(true);
+        segmentBtn.setEnabled(true);
 
         ActionListener pointListener = new ActionListener() {
             @Override
@@ -48,21 +53,19 @@ public class UI extends JFrame {
             }
         };
 
-        ActionListener lineListener = new ActionListener() {
+        ActionListener segmentListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("line");
-                for(Point p : points) {
-                    System.out.println(p.getX());
-                }
+                System.out.println("point");
+                movingSegment = new Segment();
             }
         };
 
         pointBtn.addActionListener(pointListener);
-        lineBtn.addActionListener(lineListener);
+        segmentBtn.addActionListener(segmentListener);
 
         menu.add(pointBtn);
-        menu.add(lineBtn);
+        menu.add(segmentBtn);
         menu.add(mousePositionLabel);
         setJMenuBar(menu);
 
@@ -76,9 +79,32 @@ public class UI extends JFrame {
             addMouseListener(this);
         }
 
+        public void paint(Graphics g) {
+            super.paintComponent(g);
+            //System.out.println("PAINT");
+            Graphics2D g2 = (Graphics2D) g;
+
+            if(movingPoint != null)
+                g2.drawOval(movingPoint.getX()-Point.width/2, movingPoint.getY()-Point.height/2,Point.width, Point.height);
+            if(movingSegment != null && movingSegment.getX1()>=0 && movingSegment.getX2()>=0)
+                g2.draw(new Line2D.Double(movingSegment.getX1(), movingSegment.getY1(), movingSegment.getX2(), movingSegment.getY2()));
+
+            for(Point p : points) {
+                g2.drawOval(p.getX()-Point.width/2, p.getY()-Point.height/2, Point.width, Point.height);
+                g2.fillOval(p.getX()-Point.width/2, p.getY()-Point.height/2, Point.width, Point.height);
+            }
+
+            for(Segment s : segments) {
+                Line2D l = new Line2D.Double(s.getX1(), s.getY1(), s.getX2(), s.getY2());
+                g2.draw(l);
+            }
+        }
+
         @Override
         public void mouseDragged(MouseEvent mouseEvent) {
-            if(movingPoint != null) movingPoint.setLocation(mouseEvent.getX(), mouseEvent.getY());
+            if(movingPoint != null)
+                movingPoint.setLocation(mouseEvent.getX(), mouseEvent.getY());
+
             mousePositionLabel.setText(Integer.toString(mouseEvent.getX()) + ":" + Integer.toString(mouseEvent.getY()));
             repaint();
         }
@@ -87,21 +113,11 @@ public class UI extends JFrame {
         public void mouseMoved(MouseEvent mouseEvent) {
             mousePositionLabel.setText(Integer.toString(mouseEvent.getX()) + ":" + Integer.toString(mouseEvent.getY()));
             if(movingPoint != null) movingPoint.setLocation(mouseEvent.getX(), mouseEvent.getY());
-            repaint();
-        }
-
-        public void paint(Graphics g) {
-            super.paintComponent(g);
-            System.out.println("PAINT");
-            Graphics2D g2 = (Graphics2D) g;
-
-            if(movingPoint != null)
-                g2.drawOval(movingPoint.getX()-Point.width/2, movingPoint.getY()-Point.height/2,Point.width, Point.height);
-
-            for(Point p : points) {
-                g2.drawOval(p.getX()-Point.width/2, p.getY()-Point.height/2, Point.width, Point.height);
-                g2.fillOval(p.getX()-Point.width/2, p.getY()-Point.height/2, Point.width, Point.height);
+            if(movingSegment != null && movingSegment.getX1()>=0) {
+                movingSegment.setLocation(movingSegment.getX1(), movingSegment.getY1(), mouseEvent.getX(), mouseEvent.getY());
             }
+
+            repaint();
         }
 
         @Override
@@ -120,12 +136,24 @@ public class UI extends JFrame {
                     movingPoint = p;
                 }
             }
+
+            if(movingSegment != null && movingSegment.getX1()<0) {
+                movingSegment.setLocation(mouseEvent.getX(), mouseEvent.getY(), movingSegment.getX2(), movingSegment.getY2());
+            }
+            else if(movingSegment != null && movingSegment.getX1()>=0) {
+                movingSegment.setLocation(movingSegment.getX1(), movingSegment.getY1(), mouseEvent.getX(), mouseEvent.getY());
+                segments.add(movingSegment);
+            }
+
             repaint();
         }
 
         @Override
         public void mouseReleased(MouseEvent mouseEvent) {
             movingPoint = null;
+            if(movingSegment != null && movingSegment.getX1()>=0 && movingSegment.getX2()>=0) {
+                movingSegment = null;
+            }
         }
 
         @Override
