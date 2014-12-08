@@ -83,6 +83,7 @@ public class UI extends JFrame {
             super.paintComponent(g);
             //System.out.println("PAINT");
             Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             if(movingPoint != null)
                 g2.drawOval(movingPoint.getX()-Point.width/2, movingPoint.getY()-Point.height/2,Point.width, Point.height);
