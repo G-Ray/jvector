@@ -1,5 +1,6 @@
 package com.eidd.view;
 
+import com.eidd.graphics.Line;
 import com.eidd.graphics.Point;
 import com.eidd.graphics.Segment;
 
@@ -17,17 +18,20 @@ import javax.swing.JPanel;
 public class UI extends JFrame {
 
     private JButton pointBtn,
-                    segmentBtn;
+                    segmentBtn,
+                    lineBtn;
 
     private JLabel mousePositionLabel;
     private ArrayList<Point> points;
     private ArrayList<Segment> segments;
+    private ArrayList<Line> lines;
     private Point movingPoint;
     private Segment movingSegment;
 
     public UI() {
         points = new ArrayList<Point>();
         segments = new ArrayList<Segment>();
+        lines = new ArrayList<Line>();
 
         setTitle("Jvector");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -39,11 +43,13 @@ public class UI extends JFrame {
 
         pointBtn = new JButton("Point");
         segmentBtn = new JButton("Segment");
+        lineBtn = new JButton("Line");
 
         mousePositionLabel = new JLabel();
 
         pointBtn.setEnabled(true);
         segmentBtn.setEnabled(true);
+        lineBtn.setEnabled(true);
 
         ActionListener pointListener = new ActionListener() {
             @Override
@@ -61,11 +67,21 @@ public class UI extends JFrame {
             }
         };
 
+        ActionListener lineListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("point");
+                movingSegment = new Line();
+            }
+        };
+
         pointBtn.addActionListener(pointListener);
         segmentBtn.addActionListener(segmentListener);
+        lineBtn.addActionListener(lineListener);
 
         menu.add(pointBtn);
         menu.add(segmentBtn);
+        menu.add(lineBtn);
         menu.add(mousePositionLabel);
         setJMenuBar(menu);
 
@@ -87,8 +103,25 @@ public class UI extends JFrame {
 
             if(movingPoint != null)
                 g2.drawOval(movingPoint.getX()-Point.width/2, movingPoint.getY()-Point.height/2,Point.width, Point.height);
-            if(movingSegment != null && movingSegment.getX1()>=0 && movingSegment.getX2()>=0)
-                g2.draw(new Line2D.Double(movingSegment.getX1(), movingSegment.getY1(), movingSegment.getX2(), movingSegment.getY2()));
+            if(movingSegment != null && movingSegment.getX1()>=0 && movingSegment.getX2()>=0) {
+                if (movingSegment instanceof Line) {
+                    System.out.println("TRACE");
+                    Line l = (Line) movingSegment;
+                    Line2D line;
+                    double coeff = l.getCoeff();
+
+                    double y0 = (l.getY1() - (coeff * l.getX1()));
+                    double x0 = 0.;
+                    double xMax = this.getWidth();
+                    double yMax = coeff * xMax + y0;
+                    if(l.getX1() < l.getX2())
+                        line = new Line2D.Double(x0, y0, xMax, yMax);
+                    else line = new Line2D.Double(xMax, yMax, x0, y0);
+                    g2.draw(line);
+                }
+                else
+                    g2.draw(new Line2D.Double(movingSegment.getX1(), movingSegment.getY1(), movingSegment.getX2(), movingSegment.getY2()));
+            }
 
             for(Point p : points) {
                 g2.drawOval(p.getX()-Point.width/2, p.getY()-Point.height/2, Point.width, Point.height);
@@ -98,6 +131,20 @@ public class UI extends JFrame {
             for(Segment s : segments) {
                 Line2D l = new Line2D.Double(s.getX1(), s.getY1(), s.getX2(), s.getY2());
                 g2.draw(l);
+            }
+
+            for(Line l : lines) {
+                Line2D line;
+                double coeff = l.getCoeff();
+
+                double y0 = (l.getY1() - (coeff * l.getX1()));
+                double x0 = 0.;
+                double xMax = this.getWidth();
+                double yMax = coeff * xMax + y0;
+                if(l.getX1() < l.getX2())
+                    line = new Line2D.Double(x0, y0, xMax, yMax);
+                else line = new Line2D.Double(xMax, yMax, x0, y0);
+                g2.draw(line);
             }
         }
 
@@ -143,7 +190,10 @@ public class UI extends JFrame {
             }
             else if(movingSegment != null && movingSegment.getX1()>=0) {
                 movingSegment.setLocation(movingSegment.getX1(), movingSegment.getY1(), mouseEvent.getX(), mouseEvent.getY());
-                segments.add(movingSegment);
+                if(movingSegment instanceof Line) {
+                    lines.add((Line) movingSegment);
+                }
+                else segments.add(movingSegment);
             }
 
             repaint();
