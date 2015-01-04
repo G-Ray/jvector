@@ -25,6 +25,7 @@ public class UI extends JFrame {
 
     public UI() {
         graphics = new ArrayList<Graphic>();
+        curGraphic = new Point();
 
         setTitle("Jvector");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -77,6 +78,7 @@ public class UI extends JFrame {
         menu.add(segmentBtn);
         menu.add(lineBtn);
         mousePositionLabel.setMinimumSize(new Dimension(50, 20));
+        mousePositionLabel.setPreferredSize(new Dimension(50, 20));
         mousePositionLabel.setText("0:0");
         menu.add(mousePositionLabel);
 
