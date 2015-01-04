@@ -5,6 +5,9 @@ package com.eidd.graphics;
  */
 public class Segment {
 
+    public final static int width = 20,
+                            height = 20;
+
     private Point p1,
                   p2;
 

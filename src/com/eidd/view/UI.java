@@ -55,6 +55,7 @@ public class UI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("point");
+                movingSegment = null;
                 movingPoint = new Point();
             }
         };
@@ -63,6 +64,7 @@ public class UI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("point");
+                movingPoint = null;
                 movingSegment = new Segment();
             }
         };
@@ -71,6 +73,7 @@ public class UI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("point");
+                movingPoint = null;
                 movingSegment = new Line();
             }
         };
@@ -185,6 +188,16 @@ public class UI extends JFrame {
                 }
             }
 
+            for(Segment s : segments) {
+                Line2D l = new Line2D.Double(s.getX1(), s.getY1(), s.getX2(), s.getY2());
+                /*if((Math.abs(mouseEvent.getX() - s.getX()) <= Segment.width)
+                        && (Math.abs(mouseEvent.getY() - s.getY()) <= Point.height))*/
+                if(l.intersects(mouseEvent.getX(), mouseEvent.getY(), Segment.width, Segment.height))
+                {
+                    System.out.println("TOUCHE");
+                }
+            }
+
             if(movingSegment != null && movingSegment.getX1()<0) {
                 movingSegment.setLocation(mouseEvent.getX(), mouseEvent.getY(), movingSegment.getX2(), movingSegment.getY2());
             }
@@ -201,10 +214,12 @@ public class UI extends JFrame {
 
         @Override
         public void mouseReleased(MouseEvent mouseEvent) {
-            movingPoint = null;
             if(movingSegment != null && movingSegment.getX1()>=0 && movingSegment.getX2()>=0) {
-                movingSegment = null;
+                if(movingSegment instanceof Segment)
+                    movingSegment = new Segment();
+                else movingSegment = new Line();
             }
+            if(movingPoint != null) movingPoint = new Point();
         }
 
         @Override
