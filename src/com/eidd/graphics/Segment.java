@@ -57,7 +57,17 @@ public class Segment extends Graphic {
         g2.draw(l);
     }
 
+    public void drawSelected(Graphics2D g2) {
+        p1.draw(g2);
+        p2.draw(g2);
+    }
+
     public boolean isPlaced() {
         return (this.getX1()>=0 && this.getX2()>=0);
+    }
+
+    public boolean intersect(int x, int y) {
+        Line2D l = new Line2D.Double(this.getX1(), this.getY1(), this.getX2(), this.getY2());
+        return (l.ptSegDist(x, y) < 5);
     }
 }

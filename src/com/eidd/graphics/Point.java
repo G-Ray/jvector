@@ -1,6 +1,7 @@
 package com.eidd.graphics;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 
 /**
  * Created by geoffrey on 12/6/14.
@@ -42,5 +43,15 @@ public class Point extends Graphic {
         g2.setColor(this.getColor());
         g2.drawOval(this.getX() - Point.width / 2, this.getY() - Point.height / 2, Point.width, Point.height);
         g2.fillOval(this.getX() - Point.width / 2, this.getY() - Point.height / 2, Point.width, Point.height);
+    }
+
+    public void drawSelected(Graphics2D g2) {
+        g2.setColor(Color.green);
+        g2.drawOval(this.getX() - Point.width / 2, this.getY() - Point.height / 2, Point.width, Point.height);
+    }
+
+    public boolean intersect(int x, int y) {
+        Line2D l = new Line2D.Double(this.x, this.y, this.x, this.y);
+        return (l.ptSegDist(x, y) < 5);
     }
 }

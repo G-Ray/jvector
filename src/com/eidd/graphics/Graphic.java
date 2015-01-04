@@ -18,5 +18,7 @@ public abstract class Graphic {
     }
 
     public abstract void draw(Graphics2D g2);
+    public abstract void drawSelected(Graphics2D g2);
+    public abstract boolean intersect(int x, int y);
 
 }
