@@ -37,4 +37,10 @@ public class Point extends Graphic {
     public String toString() {
         return (this.x + ":" + this.y);
     }
+
+    public void draw(Graphics2D g2) {
+        g2.setColor(this.getColor());
+        g2.drawOval(this.getX() - Point.width / 2, this.getY() - Point.height / 2, Point.width, Point.height);
+        g2.fillOval(this.getX() - Point.width / 2, this.getY() - Point.height / 2, Point.width, Point.height);
+    }
 }

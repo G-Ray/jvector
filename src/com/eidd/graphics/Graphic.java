@@ -5,7 +5,7 @@ import java.awt.*;
 /**
  * Created by geoffrey on 1/4/15.
  */
-public class Graphic {
+public abstract class Graphic {
 
     protected Color color = Color.black;
 
@@ -16,5 +16,7 @@ public class Graphic {
     public Color getColor() {
         return color;
     }
+
+    public abstract void draw(Graphics2D g2);
 
 }

@@ -1,5 +1,8 @@
 package com.eidd.graphics;
 
+import java.awt.*;
+import java.awt.geom.Line2D;
+
 /**
  * Created by geoffrey on 12/8/14.
  */
@@ -11,4 +14,21 @@ public class Line extends Segment {
         return y/x;
     }
 
+
+    public void draw(Graphics2D g2) {
+        if(this.getX2()<0) return;
+
+        g2.setColor(this.getColor());
+        Line2D line;
+        double coeff = this.getCoeff();
+
+        double y0 = (this.getY1() - (coeff * this.getX1()));
+        double x0 = 0.;
+        double xMax = 1920; //TODO: avoid this hardcoded const
+        double yMax = coeff * xMax + y0;
+        if(this.getX1() < this.getX2())
+            line = new Line2D.Double(x0, y0, xMax, yMax);
+        else line = new Line2D.Double(xMax, yMax, x0, y0);
+        g2.draw(line);
+    }
 }

@@ -1,12 +1,12 @@
 package com.eidd.view;
 
+import com.eidd.graphics.Graphic;
 import com.eidd.graphics.Line;
 import com.eidd.graphics.Point;
 import com.eidd.graphics.Segment;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 import javax.swing.*;
@@ -19,17 +19,12 @@ public class UI extends JFrame {
                     lineBtn;
 
     private JLabel mousePositionLabel;
-    private ArrayList<Point> points;
-    private ArrayList<Segment> segments;
-    private ArrayList<Line> lines;
-    private Point movingPoint;
-    private Segment movingSegment;
+    private ArrayList<Graphic> graphics;
+    private Graphic curGraphic;
     private JColorChooser jColorChooser;
 
     public UI() {
-        points = new ArrayList<Point>();
-        segments = new ArrayList<Segment>();
-        lines = new ArrayList<Line>();
+        graphics = new ArrayList<Graphic>();
 
         setTitle("Jvector");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -54,8 +49,7 @@ public class UI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("point");
-                movingSegment = null;
-                movingPoint = new Point();
+                curGraphic = new Point();
             }
         };
 
@@ -63,8 +57,7 @@ public class UI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("point");
-                movingPoint = null;
-                movingSegment = new Segment();
+                curGraphic = new Segment();
             }
         };
 
@@ -72,8 +65,7 @@ public class UI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("point");
-                movingPoint = null;
-                movingSegment = new Line();
+                curGraphic = new Line();
             }
         };
 
@@ -84,9 +76,12 @@ public class UI extends JFrame {
         menu.add(pointBtn);
         menu.add(segmentBtn);
         menu.add(lineBtn);
+        mousePositionLabel.setMinimumSize(new Dimension(50, 20));
+        mousePositionLabel.setText("0:0");
         menu.add(mousePositionLabel);
 
         jColorChooser.remove(1);
+
         AbstractColorChooserPanel[] panels = jColorChooser.getChooserPanels();
         for (AbstractColorChooserPanel accp : panels) {
             if (!accp.getDisplayName().equals("RGB") && !accp.getDisplayName().equals("Swatches")) {
@@ -109,77 +104,34 @@ public class UI extends JFrame {
 
         public void paint(Graphics g) {
             super.paintComponent(g);
-            //System.out.println("PAINT");
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            if(movingPoint != null)
-                g2.drawOval(movingPoint.getX()-Point.width/2, movingPoint.getY()-Point.height/2,Point.width, Point.height);
-            if(movingSegment != null && movingSegment.getX1()>=0 && movingSegment.getX2()>=0) {
-                if (movingSegment instanceof Line) {
-                    System.out.println("TRACE");
-                    Line l = (Line) movingSegment;
-                    Line2D line;
-                    double coeff = l.getCoeff();
+            if(curGraphic != null) curGraphic.draw(g2);
 
-                    double y0 = (l.getY1() - (coeff * l.getX1()));
-                    double x0 = 0.;
-                    double xMax = this.getWidth();
-                    double yMax = coeff * xMax + y0;
-                    if(l.getX1() < l.getX2())
-                        line = new Line2D.Double(x0, y0, xMax, yMax);
-                    else line = new Line2D.Double(xMax, yMax, x0, y0);
-                    g2.draw(line);
-                }
-                else
-                    g2.draw(new Line2D.Double(movingSegment.getX1(), movingSegment.getY1(), movingSegment.getX2(), movingSegment.getY2()));
-            }
-
-            for(Point p : points) {
-                g2.setColor(p.getColor());
-                g2.drawOval(p.getX()-Point.width/2, p.getY()-Point.height/2, Point.width, Point.height);
-                g2.fillOval(p.getX()-Point.width/2, p.getY()-Point.height/2, Point.width, Point.height);
-            }
-
-            for(Segment s : segments) {
-                g2.setColor(s.getColor());
-                Line2D l = new Line2D.Double(s.getX1(), s.getY1(), s.getX2(), s.getY2());
-                g2.draw(l);
-            }
-
-            for(Line l : lines) {
-                g2.setColor(l.getColor());
-                Line2D line;
-                double coeff = l.getCoeff();
-
-                double y0 = (l.getY1() - (coeff * l.getX1()));
-                double x0 = 0.;
-                double xMax = this.getWidth();
-                double yMax = coeff * xMax + y0;
-                if(l.getX1() < l.getX2())
-                    line = new Line2D.Double(x0, y0, xMax, yMax);
-                else line = new Line2D.Double(xMax, yMax, x0, y0);
-                g2.draw(line);
+            for(Graphic graphic : graphics) {
+                graphic.draw(g2);
             }
         }
 
         @Override
         public void mouseDragged(MouseEvent mouseEvent) {
-            if(movingPoint != null)
-                movingPoint.setLocation(mouseEvent.getX(), mouseEvent.getY());
-
             mousePositionLabel.setText(Integer.toString(mouseEvent.getX()) + ":" + Integer.toString(mouseEvent.getY()));
             repaint();
         }
 
         @Override
         public void mouseMoved(MouseEvent mouseEvent) {
+            // Update mouse location
             mousePositionLabel.setText(Integer.toString(mouseEvent.getX()) + ":" + Integer.toString(mouseEvent.getY()));
-            if(movingPoint != null) movingPoint.setLocation(mouseEvent.getX(), mouseEvent.getY());
-            if(movingSegment != null && movingSegment.getX1()>=0) {
-                movingSegment.setLocation(movingSegment.getX1(), movingSegment.getY1(), mouseEvent.getX(), mouseEvent.getY());
-            }
 
+            // Point
+            if(curGraphic instanceof Point) ((Point) curGraphic).setLocation(mouseEvent.getX(), mouseEvent.getY());
+
+            // Segment and line
+            if(curGraphic instanceof Segment && ((Segment) curGraphic).getX1()>=0) { // First point is already placed
+                ((Segment) curGraphic).setLocation(((Segment) curGraphic).getX1(), ((Segment) curGraphic).getY1(), mouseEvent.getX(), mouseEvent.getY());
+            }
             repaint();
         }
 
@@ -190,54 +142,34 @@ public class UI extends JFrame {
 
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
-            if(movingPoint != null) {
-                movingPoint.setColor(jColorChooser.getColor());
-                points.add(movingPoint);
+            curGraphic.setColor(jColorChooser.getColor());
+
+            if(curGraphic instanceof Point) {
+                graphics.add(curGraphic);
             }
 
-            for(Point p : points) {
-                if((Math.abs(mouseEvent.getX() - p.getX()) <= Point.width)
-                        && (Math.abs(mouseEvent.getY() - p.getY()) <= Point.height))
-                {
-                    System.out.println("TOUCHE");
-                    movingPoint = p;
-                }
+            if(curGraphic instanceof Segment && ((Segment)curGraphic).getX1()<0) { // Set the first point of segment/line
+                ((Segment)curGraphic).setLocation(mouseEvent.getX(), mouseEvent.getY(), ((Segment) curGraphic).getX2(), ((Segment) curGraphic).getY2());
             }
+            else if(curGraphic instanceof Segment && ((Segment)curGraphic).getX1()>=0) { // Set the second point
+                ((Segment) curGraphic).setLocation(((Segment) curGraphic).getX1(), ((Segment) curGraphic).getY1(), mouseEvent.getX(), mouseEvent.getY());
 
-            for(Segment s : segments) {
-                Line2D l = new Line2D.Double(s.getX1(), s.getY1(), s.getX2(), s.getY2());
-                /*if((Math.abs(mouseEvent.getX() - s.getX()) <= Segment.width)
-                        && (Math.abs(mouseEvent.getY() - s.getY()) <= Point.height))*/
-                if(l.intersects(mouseEvent.getX(), mouseEvent.getY(), Segment.width, Segment.height))
-                {
-                    System.out.println("TOUCHE");
-                }
+                // Segment or Line is built
+                graphics.add(curGraphic);
             }
-
-            if(movingSegment != null && movingSegment.getX1()<0) {
-                movingSegment.setColor(jColorChooser.getColor());
-                movingSegment.setLocation(mouseEvent.getX(), mouseEvent.getY(), movingSegment.getX2(), movingSegment.getY2());
-            }
-            else if(movingSegment != null && movingSegment.getX1()>=0) {
-                movingSegment.setColor(jColorChooser.getColor());
-                movingSegment.setLocation(movingSegment.getX1(), movingSegment.getY1(), mouseEvent.getX(), mouseEvent.getY());
-                if(movingSegment instanceof Line) {
-                    lines.add((Line) movingSegment);
-                }
-                else segments.add(movingSegment);
-            }
-
             repaint();
         }
 
         @Override
         public void mouseReleased(MouseEvent mouseEvent) {
-            if(movingSegment != null && movingSegment.getX1()>=0 && movingSegment.getX2()>=0) {
-                if(movingSegment instanceof Segment)
-                    movingSegment = new Segment();
-                else movingSegment = new Line();
+            if(curGraphic instanceof Point) curGraphic = new Point();
+
+            if(curGraphic instanceof Segment && ((Segment) curGraphic).isPlaced()) {
+                if(curGraphic instanceof Line)
+                    curGraphic = new Line();
+                else if(curGraphic instanceof Segment)
+                    curGraphic = new Segment();
             }
-            if(movingPoint != null) movingPoint = new Point();
         }
 
         @Override
