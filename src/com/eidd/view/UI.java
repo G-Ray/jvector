@@ -81,6 +81,7 @@ public class UI extends JFrame {
         menu.add(mousePositionLabel);
 
         jColorChooser.remove(1);
+        jColorChooser.setColor(Color.BLACK);
 
         AbstractColorChooserPanel[] panels = jColorChooser.getChooserPanels();
         for (AbstractColorChooserPanel accp : panels) {
@@ -116,12 +117,13 @@ public class UI extends JFrame {
 
         @Override
         public void mouseDragged(MouseEvent mouseEvent) {
-            mousePositionLabel.setText(Integer.toString(mouseEvent.getX()) + ":" + Integer.toString(mouseEvent.getY()));
-            repaint();
+
         }
 
         @Override
         public void mouseMoved(MouseEvent mouseEvent) {
+            curGraphic.setColor(jColorChooser.getColor());
+
             // Update mouse location
             mousePositionLabel.setText(Integer.toString(mouseEvent.getX()) + ":" + Integer.toString(mouseEvent.getY()));
 
