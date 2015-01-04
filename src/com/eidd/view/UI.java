@@ -127,6 +127,7 @@ public class UI extends JFrame {
             }
 
             for(Point p : points) {
+                g2.setColor(p.getColor());
                 g2.drawOval(p.getX()-Point.width/2, p.getY()-Point.height/2, Point.width, Point.height);
                 g2.fillOval(p.getX()-Point.width/2, p.getY()-Point.height/2, Point.width, Point.height);
             }

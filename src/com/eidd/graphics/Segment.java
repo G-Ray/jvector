@@ -1,9 +1,11 @@
 package com.eidd.graphics;
 
+import java.awt.*;
+
 /**
  * Created by geoffrey on 12/7/14.
  */
-public class Segment {
+public class Segment extends Graphic {
 
     public final static int width = 20,
                             height = 20;

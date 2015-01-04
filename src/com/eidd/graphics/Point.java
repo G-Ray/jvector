@@ -1,9 +1,11 @@
 package com.eidd.graphics;
 
+import java.awt.*;
+
 /**
  * Created by geoffrey on 12/6/14.
  */
-public class Point {
+public class Point extends Graphic {
 
     public final static int width = 10,
                             height = 10;
