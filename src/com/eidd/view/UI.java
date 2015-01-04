@@ -12,8 +12,10 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-public class UI extends JFrame {
+public class UI extends JFrame implements ChangeListener {
 
     private JButton pointBtn,
                     segmentBtn,
@@ -90,10 +92,18 @@ public class UI extends JFrame {
             }
         };
 
+        ActionListener colorListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("color");
+            }
+        };
+
         pointBtn.addActionListener(pointListener);
         segmentBtn.addActionListener(segmentListener);
         lineBtn.addActionListener(lineListener);
         selectBtn.addActionListener(selectListener);
+        jColorChooser.getSelectionModel().addChangeListener(this);
 
         menu.add(pointBtn);
         menu.add(segmentBtn);
@@ -118,6 +128,14 @@ public class UI extends JFrame {
         setJMenuBar(menu);
 
         setContentPane(canvas);
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        for(Graphic g : selections) {
+            g.setColor(jColorChooser.getColor());
+        }
+        repaint();
     }
 
     private class Canvas extends JPanel implements MouseMotionListener, MouseListener {
