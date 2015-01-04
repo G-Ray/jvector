@@ -24,6 +24,7 @@ public class UI extends JFrame {
     private ArrayList<Line> lines;
     private Point movingPoint;
     private Segment movingSegment;
+    private JColorChooser jColorChooser;
 
     public UI() {
         points = new ArrayList<Point>();
@@ -41,7 +42,7 @@ public class UI extends JFrame {
         pointBtn = new JButton("Point");
         segmentBtn = new JButton("Segment");
         lineBtn = new JButton("Line");
-        JColorChooser jColorChooser = new JColorChooser();
+        jColorChooser = new JColorChooser();
 
         mousePositionLabel = new JLabel();
 
@@ -88,7 +89,6 @@ public class UI extends JFrame {
         jColorChooser.remove(1);
         AbstractColorChooserPanel[] panels = jColorChooser.getChooserPanels();
         for (AbstractColorChooserPanel accp : panels) {
-            System.out.println(accp.getDisplayName());
             if (!accp.getDisplayName().equals("RGB") && !accp.getDisplayName().equals("Swatches")) {
                 jColorChooser.removeChooserPanel(accp);
             }
@@ -142,11 +142,13 @@ public class UI extends JFrame {
             }
 
             for(Segment s : segments) {
+                g2.setColor(s.getColor());
                 Line2D l = new Line2D.Double(s.getX1(), s.getY1(), s.getX2(), s.getY2());
                 g2.draw(l);
             }
 
             for(Line l : lines) {
+                g2.setColor(l.getColor());
                 Line2D line;
                 double coeff = l.getCoeff();
 
@@ -188,7 +190,11 @@ public class UI extends JFrame {
 
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
-            if(movingPoint != null) points.add(movingPoint);
+            if(movingPoint != null) {
+                movingPoint.setColor(jColorChooser.getColor());
+                points.add(movingPoint);
+            }
+
             for(Point p : points) {
                 if((Math.abs(mouseEvent.getX() - p.getX()) <= Point.width)
                         && (Math.abs(mouseEvent.getY() - p.getY()) <= Point.height))
@@ -209,9 +215,11 @@ public class UI extends JFrame {
             }
 
             if(movingSegment != null && movingSegment.getX1()<0) {
+                movingSegment.setColor(jColorChooser.getColor());
                 movingSegment.setLocation(mouseEvent.getX(), mouseEvent.getY(), movingSegment.getX2(), movingSegment.getY2());
             }
             else if(movingSegment != null && movingSegment.getX1()>=0) {
+                movingSegment.setColor(jColorChooser.getColor());
                 movingSegment.setLocation(movingSegment.getX1(), movingSegment.getY1(), mouseEvent.getX(), mouseEvent.getY());
                 if(movingSegment instanceof Line) {
                     lines.add((Line) movingSegment);
