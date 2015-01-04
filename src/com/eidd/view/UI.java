@@ -9,11 +9,8 @@ import java.awt.event.*;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
+import javax.swing.*;
+import javax.swing.colorchooser.AbstractColorChooserPanel;
 
 public class UI extends JFrame {
 
@@ -44,6 +41,7 @@ public class UI extends JFrame {
         pointBtn = new JButton("Point");
         segmentBtn = new JButton("Segment");
         lineBtn = new JButton("Line");
+        JColorChooser jColorChooser = new JColorChooser();
 
         mousePositionLabel = new JLabel();
 
@@ -86,6 +84,17 @@ public class UI extends JFrame {
         menu.add(segmentBtn);
         menu.add(lineBtn);
         menu.add(mousePositionLabel);
+
+        jColorChooser.remove(1);
+        AbstractColorChooserPanel[] panels = jColorChooser.getChooserPanels();
+        for (AbstractColorChooserPanel accp : panels) {
+            System.out.println(accp.getDisplayName());
+            if (!accp.getDisplayName().equals("RGB") && !accp.getDisplayName().equals("Swatches")) {
+                jColorChooser.removeChooserPanel(accp);
+            }
+        }
+
+        menu.add(jColorChooser);
         setJMenuBar(menu);
 
         setContentPane(canvas);
