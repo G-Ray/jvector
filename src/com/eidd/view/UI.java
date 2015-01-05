@@ -1,9 +1,7 @@
 package com.eidd.view;
 
-import com.eidd.graphics.Graphic;
-import com.eidd.graphics.Line;
+import com.eidd.graphics.*;
 import com.eidd.graphics.Point;
-import com.eidd.graphics.Segment;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -20,6 +18,7 @@ public class UI extends JFrame implements ChangeListener {
     private JButton pointBtn,
                     segmentBtn,
                     lineBtn,
+                    triangleBtn,
                     selectBtn;
 
     private JLabel mousePositionLabel;
@@ -45,6 +44,7 @@ public class UI extends JFrame implements ChangeListener {
         segmentBtn = new JButton("Segment");
         lineBtn = new JButton("Line");
         selectBtn = new JButton("Select");
+        triangleBtn = new JButton("Triangle");
         jColorChooser = new JColorChooser();
 
         mousePositionLabel = new JLabel();
@@ -84,6 +84,16 @@ public class UI extends JFrame implements ChangeListener {
             }
         };
 
+        ActionListener triangleListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("triangle");
+                curGraphic = new Triangle();
+                selections.clear();
+                repaint();
+            }
+        };
+
         ActionListener selectListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -102,12 +112,14 @@ public class UI extends JFrame implements ChangeListener {
         pointBtn.addActionListener(pointListener);
         segmentBtn.addActionListener(segmentListener);
         lineBtn.addActionListener(lineListener);
+        triangleBtn.addActionListener(triangleListener);
         selectBtn.addActionListener(selectListener);
         jColorChooser.getSelectionModel().addChangeListener(this);
 
         menu.add(pointBtn);
         menu.add(segmentBtn);
         menu.add(lineBtn);
+        menu.add(triangleBtn);
         menu.add(selectBtn);
         mousePositionLabel.setMinimumSize(new Dimension(50, 20));
         mousePositionLabel.setPreferredSize(new Dimension(50, 20));
@@ -150,14 +162,13 @@ public class UI extends JFrame implements ChangeListener {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            if(curGraphic != null) curGraphic.draw(g2);
+            if(curGraphic != null) curGraphic.drawSelected(g2);
 
             for(Graphic graphic : graphics) {
                 graphic.draw(g2);
             }
 
             for(Graphic s : selections) {
-                System.out.println("DRAW");
                 s.drawSelected(g2);
             }
         }
@@ -182,6 +193,7 @@ public class UI extends JFrame implements ChangeListener {
                 if (curGraphic instanceof Segment && ((Segment) curGraphic).getX1() >= 0) { // First point is already placed
                     ((Segment) curGraphic).setLocation(((Segment) curGraphic).getX1(), ((Segment) curGraphic).getY1(), mouseEvent.getX(), mouseEvent.getY());
                 }
+
             }
             repaint();
         }
@@ -204,8 +216,18 @@ public class UI extends JFrame implements ChangeListener {
                     ((Segment) curGraphic).setLocation(mouseEvent.getX(), mouseEvent.getY(), ((Segment) curGraphic).getX2(), ((Segment) curGraphic).getY2());
                 } else if (curGraphic instanceof Segment && ((Segment) curGraphic).getX1() >= 0) { // Set the second point
                     ((Segment) curGraphic).setLocation(((Segment) curGraphic).getX1(), ((Segment) curGraphic).getY1(), mouseEvent.getX(), mouseEvent.getY());
-
                     // Segment or Line is built
+                    graphics.add(curGraphic);
+                }
+
+                if(curGraphic instanceof Triangle && ((Triangle) curGraphic).getP1().getX() < 0) { // Set the first point of a triangle
+                    ((Triangle) curGraphic).setP1(new Point(mouseEvent.getX(), mouseEvent.getY()));
+                }
+                else if(curGraphic instanceof Triangle && ((Triangle) curGraphic).getP2().getX() < 0) { // Set the second point
+                    ((Triangle) curGraphic).setP2(new Point(mouseEvent.getX(), mouseEvent.getY()));
+                }
+                else if(curGraphic instanceof Triangle && ((Triangle) curGraphic).getP3().getX() < 0) { // Set the third point
+                    ((Triangle) curGraphic).setP3(new Point(mouseEvent.getX(), mouseEvent.getY()));
                     graphics.add(curGraphic);
                 }
             }
@@ -236,6 +258,10 @@ public class UI extends JFrame implements ChangeListener {
                     curGraphic = new Line();
                 else if(curGraphic instanceof Segment)
                     curGraphic = new Segment();
+            }
+
+            if(curGraphic instanceof  Triangle && ((Triangle) curGraphic).getP3().getX() > 0) {
+                curGraphic = new Triangle();
             }
         }
 
