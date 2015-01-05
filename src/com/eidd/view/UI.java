@@ -5,7 +5,6 @@ import com.eidd.graphics.Point;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import javax.swing.*;
@@ -115,13 +114,6 @@ public class UI extends JFrame implements ChangeListener {
             }
         };
 
-        ActionListener colorListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("color");
-            }
-        };
-
         pointBtn.addActionListener(pointListener);
         segmentBtn.addActionListener(segmentListener);
         lineBtn.addActionListener(lineListener);
@@ -154,6 +146,9 @@ public class UI extends JFrame implements ChangeListener {
         menu.add(jColorChooser);
         setJMenuBar(menu);
 
+        KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        manager.addKeyEventDispatcher(new keyDispatcher());
+
         setContentPane(canvas);
     }
 
@@ -163,6 +158,26 @@ public class UI extends JFrame implements ChangeListener {
             g.setColor(jColorChooser.getColor());
         }
         repaint();
+    }
+
+    private class keyDispatcher implements KeyEventDispatcher {
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent e) {
+            if (e.getID() == KeyEvent.KEY_PRESSED) {
+                if(e.getKeyCode() == KeyEvent.VK_DELETE) {
+                    for (Graphic g : selections) {
+                        graphics.remove(g);
+                    }
+                    selections.clear();
+                    repaint();
+                }
+            } else if (e.getID() == KeyEvent.KEY_RELEASED) {
+
+            } else if (e.getID() == KeyEvent.KEY_TYPED) {
+
+            }
+            return false;
+        }
     }
 
     private class Canvas extends JPanel implements MouseMotionListener, MouseListener {
