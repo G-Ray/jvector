@@ -19,6 +19,7 @@ public class UI extends JFrame implements ChangeListener {
                     segmentBtn,
                     lineBtn,
                     triangleBtn,
+                    circleBtn,
                     selectBtn;
 
     private JLabel mousePositionLabel;
@@ -45,6 +46,7 @@ public class UI extends JFrame implements ChangeListener {
         lineBtn = new JButton("Line");
         selectBtn = new JButton("Select");
         triangleBtn = new JButton("Triangle");
+        circleBtn = new JButton("Circle");
         jColorChooser = new JColorChooser();
 
         mousePositionLabel = new JLabel();
@@ -52,6 +54,8 @@ public class UI extends JFrame implements ChangeListener {
         pointBtn.setEnabled(true);
         segmentBtn.setEnabled(true);
         lineBtn.setEnabled(true);
+        triangleBtn.setEnabled(true);
+        circleBtn.setEnabled(true);
         selectBtn.setEnabled(true);
 
         ActionListener pointListener = new ActionListener() {
@@ -94,6 +98,15 @@ public class UI extends JFrame implements ChangeListener {
             }
         };
 
+        ActionListener circleListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("circle");
+                curGraphic = new Circle();
+                selections.clear();
+            }
+        };
+
         ActionListener selectListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -113,6 +126,7 @@ public class UI extends JFrame implements ChangeListener {
         segmentBtn.addActionListener(segmentListener);
         lineBtn.addActionListener(lineListener);
         triangleBtn.addActionListener(triangleListener);
+        circleBtn.addActionListener(circleListener);
         selectBtn.addActionListener(selectListener);
         jColorChooser.getSelectionModel().addChangeListener(this);
 
@@ -120,6 +134,7 @@ public class UI extends JFrame implements ChangeListener {
         menu.add(segmentBtn);
         menu.add(lineBtn);
         menu.add(triangleBtn);
+        menu.add(circleBtn);
         menu.add(selectBtn);
         mousePositionLabel.setMinimumSize(new Dimension(50, 20));
         mousePositionLabel.setPreferredSize(new Dimension(50, 20));
@@ -230,11 +245,17 @@ public class UI extends JFrame implements ChangeListener {
                     ((Triangle) curGraphic).setP3(new Point(mouseEvent.getX(), mouseEvent.getY()));
                     graphics.add(curGraphic);
                 }
+
+                if (curGraphic instanceof Circle && ((Circle) curGraphic).getP1().getX() < 0) { // Set the first point of circle
+                    ((Circle) curGraphic).setP1(new Point(mouseEvent.getX(), mouseEvent.getY()));
+                } else if (curGraphic instanceof Circle && ((Circle) curGraphic).getP2().getX() < 0) { // Set the second point
+                    ((Circle) curGraphic).setP2(new Point(mouseEvent.getX(), mouseEvent.getY()));
+                    graphics.add(curGraphic);
+                }
             }
 
             // select detection
             if(curGraphic == null) {
-                Point2D p = new Point2D.Double(mouseEvent.getX(), mouseEvent.getY());
                 boolean found = false;
                 for (Graphic g : graphics) {
                     if(g.intersect(mouseEvent.getX(), mouseEvent.getY())) {
@@ -262,6 +283,10 @@ public class UI extends JFrame implements ChangeListener {
 
             if(curGraphic instanceof  Triangle && ((Triangle) curGraphic).getP3().getX() > 0) {
                 curGraphic = new Triangle();
+            }
+
+            if(curGraphic instanceof Circle && ((Circle) curGraphic).getP2().getX() > 0) {
+                curGraphic = new Circle();
             }
         }
 
