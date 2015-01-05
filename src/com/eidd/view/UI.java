@@ -34,7 +34,7 @@ public class UI extends JFrame implements ChangeListener {
 
         setTitle("Jvector");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setPreferredSize(new Dimension(800, 800));
+        setPreferredSize(new Dimension(1280, 800));
         setVisible(true);
 
         JMenuBar menu = new JMenuBar();

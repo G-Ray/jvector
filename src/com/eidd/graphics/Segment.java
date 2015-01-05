@@ -58,6 +58,7 @@ public class Segment extends Graphic {
     }
 
     public void drawSelected(Graphics2D g2) {
+        if(this.getX2()<0) return;
         p1.draw(g2);
         p2.draw(g2);
     }

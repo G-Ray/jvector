@@ -61,13 +61,18 @@ public class Triangle extends Graphic {
     }
 
     public void drawSelected(Graphics2D g2) {
-        p1.draw(g2);
-        p2.draw(g2);
-        p3.draw(g2);
+        if(p1.getX()>=0)
+            p1.draw(g2);
+        if(p2.getX()>=0)
+            p2.draw(g2);
+        if(p3.getX()>=0)
+            p3.draw(g2);
     }
 
     public boolean intersect(int x, int y) {
-        Line2D l = new Line2D.Double(this.p1.getX(), this.p1.getY(), this.p2.getX(), this.p2.getY());
-        return (l.ptSegDist(x, y) < 5);
+        Line2D l1 = new Line2D.Double(this.p1.getX(), this.p1.getY(), this.p2.getX(), this.p2.getY());
+        Line2D l2 = new Line2D.Double(this.p1.getX(), this.p1.getY(), this.p3.getX(), this.p3.getY());
+        Line2D l3 = new Line2D.Double(this.p2.getX(), this.p2.getY(), this.p3.getX(), this.p3.getY());
+        return ((l1.ptSegDist(x, y) < 5) || (l2.ptSegDist(x, y) < 5) || (l3.ptSegDist(x, y) < 5));
     }
 }
