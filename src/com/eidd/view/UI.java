@@ -31,6 +31,8 @@ public class UI extends JFrame implements ChangeListener {
 
     private double scaleFactor = 1;
 
+    private boolean multiSelect = false;
+
     private final Canvas canvas;
 
     public UI() {
@@ -121,7 +123,7 @@ public class UI extends JFrame implements ChangeListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("point");
-                curGraphic = null;
+                curGraphic = null; // Select mode
             }
         };
 
@@ -204,8 +206,13 @@ public class UI extends JFrame implements ChangeListener {
                         repaint();
                     }
                 }
+                if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
+                    multiSelect = true;
+                }
             } else if (e.getID() == KeyEvent.KEY_RELEASED) {
-
+                if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
+                    multiSelect = false;
+                }
             } else if (e.getID() == KeyEvent.KEY_TYPED) {
 
             }
@@ -312,16 +319,24 @@ public class UI extends JFrame implements ChangeListener {
             }
 
             // select detection
-            if(curGraphic == null) {
+            if(curGraphic == null && multiSelect) {
                 boolean found = false;
                 for (Graphic g : graphics) {
                     if(g.intersect(mouseEvent.getX(), mouseEvent.getY())) {
-                        System.out.println("TOUCHE!!!");
                         selections.add(g);
                         found = true;
                     }
                 }
                 if (!found) selections.clear();
+            }
+
+            if(curGraphic == null && !multiSelect) {
+                for (Graphic g : graphics) {
+                    if(g.intersect(mouseEvent.getX(), mouseEvent.getY())) {
+                        if(!selections.isEmpty()) selections.clear();
+                        selections.add(g);
+                    }
+                }
             }
 
             repaint();
