@@ -21,7 +21,8 @@ public class UI extends JFrame implements ChangeListener {
                     circleBtn,
                     selectBtn,
                     saveBtn,
-                    loadBtn;
+                    loadBtn,
+                    fillBtn;
 
     private JLabel mousePositionLabel;
     private ArrayList<Graphic> graphics;
@@ -57,6 +58,7 @@ public class UI extends JFrame implements ChangeListener {
         selectBtn = new JButton("Select");
         triangleBtn = new JButton("Triangle");
         circleBtn = new JButton("Circle");
+        fillBtn = new JButton("Fill/Unfill");
         jColorChooser = new JColorChooser();
 
         mousePositionLabel = new JLabel();
@@ -69,6 +71,7 @@ public class UI extends JFrame implements ChangeListener {
         selectBtn.setEnabled(true);
         saveBtn.setEnabled(true);
         loadBtn.setEnabled(true);
+        fillBtn.setEnabled(true);
 
         ActionListener pointListener = new ActionListener() {
             @Override
@@ -142,6 +145,21 @@ public class UI extends JFrame implements ChangeListener {
             }
         };
 
+        ActionListener fillListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for(Graphic g : selections) {
+                    if(g instanceof Triangle) {
+                        ((Triangle) g).switchFillColor();
+                    }
+                    if(g instanceof Circle) {
+                        ((Circle) g).switchFillColor();
+                    }
+                }
+                repaint();
+            }
+        };
+
         pointBtn.addActionListener(pointListener);
         segmentBtn.addActionListener(segmentListener);
         lineBtn.addActionListener(lineListener);
@@ -150,6 +168,7 @@ public class UI extends JFrame implements ChangeListener {
         selectBtn.addActionListener(selectListener);
         saveBtn.addActionListener(saveListener);
         loadBtn.addActionListener(loadListener);
+        fillBtn.addActionListener(fillListener);
         jColorChooser.getSelectionModel().addChangeListener(this);
 
         menu.add(saveBtn);
@@ -160,6 +179,7 @@ public class UI extends JFrame implements ChangeListener {
         menu.add(triangleBtn);
         menu.add(circleBtn);
         menu.add(selectBtn);
+        menu.add(fillBtn);
         mousePositionLabel.setMinimumSize(new Dimension(50, 20));
         mousePositionLabel.setPreferredSize(new Dimension(50, 20));
         mousePositionLabel.setText("0:0");
@@ -331,12 +351,15 @@ public class UI extends JFrame implements ChangeListener {
             }
 
             if(curGraphic == null && !multiSelect) {
+                boolean found = false;
                 for (Graphic g : graphics) {
                     if(g.intersect(mouseEvent.getX(), mouseEvent.getY())) {
                         if(!selections.isEmpty()) selections.clear();
                         selections.add(g);
+                        found = true;
                     }
                 }
+                if(!found) selections.clear();
             }
 
             repaint();

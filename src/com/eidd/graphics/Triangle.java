@@ -12,6 +12,8 @@ public class Triangle extends Graphic {
                   p2,
                   p3;
 
+    private boolean fillColor;
+
     public Triangle() {
         this(new Point(-1,-1), new Point(-1,-1), new Point(-1,-1));
     }
@@ -50,14 +52,19 @@ public class Triangle extends Graphic {
         if(this.p1.getX()<0 || this.p2.getX()<0 || this.p3.getX()<0) return; // Triangle is not set, do not draw it
 
         g2.setColor(this.getColor());
-        Line2D l1, l2, l3;
 
-        l1 = new Line2D.Double(this.p1.getX(), this.p1.getY(), this.p2.getX(), this.p2.getY());
-        l2 = new Line2D.Double(this.p2.getX(), this.p2.getY(), this.p3.getX(), this.p3.getY());
-        l3 = new Line2D.Double(this.p1.getX(), this.p1.getY(), this.p3.getX(), this.p3.getY());
-        g2.draw(l1);
-        g2.draw(l2);
-        g2.draw(l3);
+        int [] x = {p1.getX(), p2.getX(), p3.getX()};
+        int [] y = {p1.getY(), p2.getY(), p3.getY()};
+        Polygon p = new Polygon(x, y, 3);
+        g2.drawPolygon(p);
+        if(fillColor)
+            g2.fillPolygon(p);
+    }
+
+    public void switchFillColor() {
+        if(!fillColor)
+            this.fillColor = true;
+        else this.fillColor = false;
     }
 
     public void drawSelected(Graphics2D g2) {

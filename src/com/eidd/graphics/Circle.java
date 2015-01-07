@@ -12,6 +12,8 @@ public class Circle extends Graphic {
 
     private int radius; //radius
 
+    private boolean fillColor;
+
     public Circle() {
         this(new Point(-1,-1), new Point(-1,-1));
     }
@@ -49,6 +51,14 @@ public class Circle extends Graphic {
         int x = p1.getX() - radius;
         int y = p1.getY() - radius;
         g2.drawOval(x, y, radius *2, radius *2);
+        if(fillColor)
+            g2.fillOval(p1.getX() - radius, p1.getY()-radius, radius*2, radius*2);
+    }
+
+    public void switchFillColor() {
+        if(!fillColor)
+            this.fillColor = true;
+        else this.fillColor = false;
     }
 
     public void drawSelected(Graphics2D g2) {
