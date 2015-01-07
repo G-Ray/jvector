@@ -1,11 +1,12 @@
 package com.eidd.graphics;
 
 import java.awt.*;
+import java.io.Serializable;
 
 /**
  * Created by geoffrey on 1/4/15.
  */
-public abstract class Graphic {
+public abstract class Graphic implements Serializable {
 
     protected Color color = Color.black;
 

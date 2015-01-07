@@ -1,5 +1,6 @@
 package com.eidd.view;
 
+import com.eidd.Jvector;
 import com.eidd.graphics.*;
 import com.eidd.graphics.Point;
 
@@ -8,7 +9,6 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 import javax.swing.*;
-import javax.swing.colorchooser.AbstractColorChooserPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -19,7 +19,9 @@ public class UI extends JFrame implements ChangeListener {
                     lineBtn,
                     triangleBtn,
                     circleBtn,
-                    selectBtn;
+                    selectBtn,
+                    saveBtn,
+                    loadBtn;
 
     private JLabel mousePositionLabel;
     private ArrayList<Graphic> graphics;
@@ -33,6 +35,7 @@ public class UI extends JFrame implements ChangeListener {
 
     public UI() {
         graphics = new ArrayList<Graphic>();
+
         selections = new ArrayList<Graphic>();
         curGraphic = new Point();
 
@@ -44,6 +47,8 @@ public class UI extends JFrame implements ChangeListener {
         JMenuBar menu = new JMenuBar();
         canvas = new Canvas();
 
+        saveBtn = new JButton("Save");
+        loadBtn = new JButton("Load");
         pointBtn = new JButton("Point");
         segmentBtn = new JButton("Segment");
         lineBtn = new JButton("Line");
@@ -60,6 +65,8 @@ public class UI extends JFrame implements ChangeListener {
         triangleBtn.setEnabled(true);
         circleBtn.setEnabled(true);
         selectBtn.setEnabled(true);
+        saveBtn.setEnabled(true);
+        loadBtn.setEnabled(true);
 
         ActionListener pointListener = new ActionListener() {
             @Override
@@ -118,14 +125,33 @@ public class UI extends JFrame implements ChangeListener {
             }
         };
 
+        ActionListener saveListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Jvector.save(graphics);
+            }
+        };
+
+        ActionListener loadListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                graphics = Jvector.load();
+                repaint();
+            }
+        };
+
         pointBtn.addActionListener(pointListener);
         segmentBtn.addActionListener(segmentListener);
         lineBtn.addActionListener(lineListener);
         triangleBtn.addActionListener(triangleListener);
         circleBtn.addActionListener(circleListener);
         selectBtn.addActionListener(selectListener);
+        saveBtn.addActionListener(saveListener);
+        loadBtn.addActionListener(loadListener);
         jColorChooser.getSelectionModel().addChangeListener(this);
 
+        menu.add(saveBtn);
+        menu.add(loadBtn);
         menu.add(pointBtn);
         menu.add(segmentBtn);
         menu.add(lineBtn);
@@ -137,7 +163,7 @@ public class UI extends JFrame implements ChangeListener {
         mousePositionLabel.setText("0:0");
         menu.add(mousePositionLabel);
 
-        jColorChooser.remove(1);
+        jColorChooser.remove(1); // Remove color preview panel
         jColorChooser.setColor(Color.BLACK);
 
         menu.add(jColorChooser);
