@@ -14,12 +14,19 @@ public class Point extends Graphic {
     private int x,
                 y;
 
+    private boolean set = false;
+
     public Point() {
         this.setLocation(0, 0);
     }
 
     public Point(int x, int y) {
         this.setLocation(x, y);
+    }
+
+    public Point(int x, int y, boolean set) {
+        this.setLocation(x, y);
+        this.set = set;
     }
 
     public int getX() {
@@ -53,5 +60,14 @@ public class Point extends Graphic {
     public boolean intersect(int x, int y) {
         Line2D l = new Line2D.Double(this.x, this.y, this.x, this.y);
         return (l.ptSegDist(x, y) < 5);
+    }
+
+    @Override
+    public void drawPreview(Graphics2D g2) {
+        this.drawSelected(g2);
+    }
+
+    public boolean isSet() {
+        return set;
     }
 }

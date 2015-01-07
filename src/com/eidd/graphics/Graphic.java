@@ -21,5 +21,6 @@ public abstract class Graphic implements Serializable {
     public abstract void draw(Graphics2D g2);
     public abstract void drawSelected(Graphics2D g2);
     public abstract boolean intersect(int x, int y);
+    public abstract void drawPreview(Graphics2D g2);
 
 }

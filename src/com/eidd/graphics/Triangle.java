@@ -75,4 +75,19 @@ public class Triangle extends Graphic {
         Line2D l3 = new Line2D.Double(this.p2.getX(), this.p2.getY(), this.p3.getX(), this.p3.getY());
         return ((l1.ptSegDist(x, y) < 5) || (l2.ptSegDist(x, y) < 5) || (l3.ptSegDist(x, y) < 5));
     }
+
+    @Override
+    public void drawPreview(Graphics2D g2) {
+        if(p1.getX()>=0) {
+            p1.draw(g2);
+        }
+        if(p2.getX()>=0) {
+            p2.draw(g2);
+            Line2D.Double l = new Line2D.Double(this.p1.getX(), this.p1.getY(), this.p2.getX(), this.p2.getY());
+            g2.draw(l);
+        }
+        if(p3.getX()>=0) {
+            this.draw(g2);
+        }
+    }
 }

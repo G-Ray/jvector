@@ -62,4 +62,12 @@ public class Circle extends Graphic {
         int newRadius = (int) Math.sqrt((p1.getX() - x) * (p1.getX() - x) + (p1.getY() - y) * (p1.getY() - y));
         return (Math.abs(radius - newRadius) < 5);
     }
+
+    @Override
+    public void drawPreview(Graphics2D g2) {
+        if(p1.getX()>=0)
+            p1.draw(g2);
+        if(p2.getX()>=0 && !p2.isSet())
+            this.draw(g2);
+    }
 }

@@ -231,7 +231,7 @@ public class UI extends JFrame implements ChangeListener {
             g2.translate(x, y); // move to center of image
             g2.scale(scaleFactor, scaleFactor);
 
-            if(curGraphic != null) curGraphic.drawSelected(g2);
+            if(curGraphic != null) curGraphic.drawPreview(g2);
 
             for(Graphic graphic : graphics) {
                 graphic.draw(g2);
@@ -263,6 +263,9 @@ public class UI extends JFrame implements ChangeListener {
                     ((Segment) curGraphic).setLocation(((Segment) curGraphic).getX1(), ((Segment) curGraphic).getY1(), mouseEvent.getX(), mouseEvent.getY());
                 }
 
+                if(curGraphic instanceof Circle && ((Circle) curGraphic).getP1().getX() >= 0) {
+                    ((Circle) curGraphic).setP2(new Point(mouseEvent.getX(), mouseEvent.getY()));
+                }
             }
             repaint();
         }
@@ -302,8 +305,8 @@ public class UI extends JFrame implements ChangeListener {
 
                 if (curGraphic instanceof Circle && ((Circle) curGraphic).getP1().getX() < 0) { // Set the first point of circle
                     ((Circle) curGraphic).setP1(new Point(mouseEvent.getX(), mouseEvent.getY()));
-                } else if (curGraphic instanceof Circle && ((Circle) curGraphic).getP2().getX() < 0) { // Set the second point
-                    ((Circle) curGraphic).setP2(new Point(mouseEvent.getX(), mouseEvent.getY()));
+                } else if (curGraphic instanceof Circle && !((Circle) curGraphic).getP2().isSet()) { // Set the second point
+                    ((Circle) curGraphic).setP2(new Point(mouseEvent.getX(), mouseEvent.getY(), true));
                     graphics.add(curGraphic);
                 }
             }

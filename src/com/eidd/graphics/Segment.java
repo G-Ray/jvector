@@ -11,8 +11,8 @@ public class Segment extends Graphic {
     public final static int width = 20,
                             height = 20;
 
-    private Point p1,
-                  p2;
+    protected Point p1;
+    protected Point p2;
 
     public Segment() {
         this.setLocation(-1, -1, -1, -1);
@@ -59,8 +59,18 @@ public class Segment extends Graphic {
 
     public void drawSelected(Graphics2D g2) {
         if(this.getX2()<0) return;
+
         p1.draw(g2);
         p2.draw(g2);
+    }
+
+    public void drawPreview(Graphics2D g2) {
+        if(this.getX1()<0) return;
+        p1.draw(g2);
+        if(this.getX2()<0) return;
+        p2.draw(g2);
+        Line2D.Double l = new Line2D.Double(this.getX1(), this.getY1(), this.getX2(), this.getY2());
+        g2.draw(l);
     }
 
     public boolean isPlaced() {
