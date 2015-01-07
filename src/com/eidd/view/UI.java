@@ -6,6 +6,7 @@ import com.eidd.graphics.Point;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import javax.swing.*;
@@ -242,6 +243,8 @@ public class UI extends JFrame implements ChangeListener {
 
     private class Canvas extends JPanel implements MouseMotionListener, MouseListener {
 
+        private java.awt.Point lastPos;
+
         public Canvas() {
             addMouseMotionListener(this);
             addMouseListener(this);
@@ -272,15 +275,65 @@ public class UI extends JFrame implements ChangeListener {
         @Override
         public void mouseDragged(MouseEvent mouseEvent) {
 
+            int x = mouseEvent.getX();
+            int y = mouseEvent.getY();
+            if(x<0) x=0;
+            if(y<0) y=0;
+            if(x>this.getWidth()) x=this.getWidth();
+            if(y>this.getHeight()) y=this.getHeight();
+            System.out.println(x);
+
+            if(curGraphic == null) { // Select mode
+                for (Graphic g : selections) {
+                    if(g instanceof Point) {
+                        ((Point) g).setLocation(x, y);
+                        repaint();
+                    }
+                    if(g instanceof Circle) {
+                        if(((Circle) g).getP1().intersect(x, y)) {
+                            ((Circle) g).setP1(new Point(x, y));
+                            System.out.println(mouseEvent.getX() - (int) lastPos.getX());
+                            int x2 = ((Circle) g).getP2().getX() + (x - (int) lastPos.getX());
+                            int y2 = ((Circle) g).getP2().getY() + (y - (int) lastPos.getY());
+
+                            lastPos = new java.awt.Point(x, y);
+                            ((Circle) g).setP2(new Point(x2, y2));
+                        }
+                        if(((Circle) g).getP2().intersect(x, y)) {
+                            ((Circle) g).setP2(new Point(x, y));
+                        }
+                    }
+                    if(g instanceof Segment) {
+                        if(((Segment) g).getP1().intersect(x, y)) {
+                            ((Segment) g).setP1(new Point(x, y));
+                        }
+                        else if(((Segment) g).getP2().intersect(x, y)) {
+                            ((Segment) g).setP2(new Point(x, y));
+                        }
+                    }
+                    if(g instanceof Triangle) {
+                        if(((Triangle) g).getP1().intersect(x, y)) {
+                            ((Triangle) g).setP1(new Point(x, y));
+                        }
+                        else if(((Triangle) g).getP2().intersect(x, y)) {
+                            ((Triangle) g).setP2(new Point(x, y));
+                        }
+                        else if(((Triangle) g).getP3().intersect(x, y)) {
+                            ((Triangle) g).setP3(new Point(x, y));
+                        }
+                    }
+                }
+            }
+            repaint();
         }
 
         @Override
         public void mouseMoved(MouseEvent mouseEvent) {
+            // Update mouse location
+            mousePositionLabel.setText(Integer.toString(mouseEvent.getX()) + ":" + Integer.toString(mouseEvent.getY()));
+
             if(curGraphic != null) {
                 curGraphic.setColor(jColorChooser.getColor());
-
-                // Update mouse location
-                mousePositionLabel.setText(Integer.toString(mouseEvent.getX()) + ":" + Integer.toString(mouseEvent.getY()));
 
                 // Point
                 if (curGraphic instanceof Point) ((Point) curGraphic).setLocation(mouseEvent.getX(), mouseEvent.getY());
@@ -299,11 +352,36 @@ public class UI extends JFrame implements ChangeListener {
 
         @Override
         public void mouseClicked(MouseEvent mouseEvent) {
+            // select detection
+            if(curGraphic == null && multiSelect) {
+                boolean found = false;
+                for (Graphic g : graphics) {
+                    if(g.intersect(mouseEvent.getX(), mouseEvent.getY())) {
+                        selections.add(g);
+                        found = true;
+                    }
+                }
+                if (!found) selections.clear();
+            }
 
+            if(curGraphic == null && !multiSelect) {
+                boolean found = false;
+                for (Graphic g : graphics) {
+                    if(g.intersect(mouseEvent.getX(), mouseEvent.getY())) {
+                        if(!selections.isEmpty()) selections.clear();
+                        selections.add(g);
+                        found = true;
+                    }
+                }
+                if(!found) selections.clear();
+            }
+            repaint();
         }
 
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
+            lastPos = mouseEvent.getPoint();
+
             if(curGraphic != null) {
                 curGraphic.setColor(jColorChooser.getColor());
 
@@ -338,29 +416,7 @@ public class UI extends JFrame implements ChangeListener {
                 }
             }
 
-            // select detection
-            if(curGraphic == null && multiSelect) {
-                boolean found = false;
-                for (Graphic g : graphics) {
-                    if(g.intersect(mouseEvent.getX(), mouseEvent.getY())) {
-                        selections.add(g);
-                        found = true;
-                    }
-                }
-                if (!found) selections.clear();
-            }
 
-            if(curGraphic == null && !multiSelect) {
-                boolean found = false;
-                for (Graphic g : graphics) {
-                    if(g.intersect(mouseEvent.getX(), mouseEvent.getY())) {
-                        if(!selections.isEmpty()) selections.clear();
-                        selections.add(g);
-                        found = true;
-                    }
-                }
-                if(!found) selections.clear();
-            }
 
             repaint();
         }

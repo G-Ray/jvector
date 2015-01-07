@@ -59,7 +59,7 @@ public class Point extends Graphic {
 
     public boolean intersect(int x, int y) {
         Line2D l = new Line2D.Double(this.x, this.y, this.x, this.y);
-        return (l.ptSegDist(x, y) < 5);
+        return (l.ptSegDist(x, y) < 9);
     }
 
     @Override
