@@ -5,7 +5,6 @@ import com.eidd.graphics.Point;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 import javax.swing.*;
@@ -140,13 +139,6 @@ public class UI extends JFrame implements ChangeListener {
 
         jColorChooser.remove(1);
         jColorChooser.setColor(Color.BLACK);
-
-        AbstractColorChooserPanel[] panels = jColorChooser.getChooserPanels();
-        for (AbstractColorChooserPanel accp : panels) {
-            if (!accp.getDisplayName().equals("RGB") && !accp.getDisplayName().equals("Swatches")) {
-                jColorChooser.removeChooserPanel(accp);
-            }
-        }
 
         menu.add(jColorChooser);
         setJMenuBar(menu);
