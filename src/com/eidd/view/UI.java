@@ -5,6 +5,7 @@ import com.eidd.graphics.Point;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 import javax.swing.*;
@@ -27,6 +28,10 @@ public class UI extends JFrame implements ChangeListener {
     private Graphic curGraphic;
     private JColorChooser jColorChooser;
 
+    private double scaleFactor = 1;
+
+    private final Canvas canvas;
+
     public UI() {
         graphics = new ArrayList<Graphic>();
         selections = new ArrayList<Graphic>();
@@ -38,7 +43,7 @@ public class UI extends JFrame implements ChangeListener {
         setVisible(true);
 
         JMenuBar menu = new JMenuBar();
-        final Canvas canvas = new Canvas();
+        canvas = new Canvas();
 
         pointBtn = new JButton("Point");
         segmentBtn = new JButton("Segment");
@@ -171,6 +176,16 @@ public class UI extends JFrame implements ChangeListener {
                     selections.clear();
                     repaint();
                 }
+                if(e.getKeyCode() == KeyEvent.VK_ADD) {
+                    scaleFactor += 0.2;
+                    repaint();
+                }
+                if(e.getKeyCode() == KeyEvent.VK_SUBTRACT) {
+                    if(scaleFactor > 1) {
+                        scaleFactor -= 0.2;
+                        repaint();
+                    }
+                }
             } else if (e.getID() == KeyEvent.KEY_RELEASED) {
 
             } else if (e.getID() == KeyEvent.KEY_TYPED) {
@@ -190,7 +205,13 @@ public class UI extends JFrame implements ChangeListener {
         public void paint(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
+
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            double x = (getWidth() - scaleFactor * getWidth()) / 2;
+            double y = (getHeight() - scaleFactor * getHeight()) / 2;
+            g2.translate(x, y); // move to center of image
+            g2.scale(scaleFactor, scaleFactor);
 
             if(curGraphic != null) curGraphic.drawSelected(g2);
 
