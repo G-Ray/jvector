@@ -18,6 +18,7 @@ public class Jvector {
                 colorChooser.setVisible(true);
                 view.pack();
                 view.setVisible(true);
+                view.setLocationRelativeTo(null);
                 colorChooser.toFront();
             }
         });
