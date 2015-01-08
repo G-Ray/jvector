@@ -221,6 +221,7 @@ public class UI extends JFrame implements ChangeListener {
         manager.addKeyEventDispatcher(new keyDispatcher());
 
         //buttons.setSize(200, 500);
+        canvas.setBackground(Color.WHITE);
         add(buttons, BorderLayout.WEST);
         add(canvas);
     }
