@@ -49,4 +49,8 @@ public class Line extends Segment {
         Line2D l = new Line2D.Double(this.getX1(), this.getY1(), this.getX2(), this.getY2());
         return (l.ptLineDist(x, y) < 5);
     }
+
+    public double getCst(){
+        return this.getY1()-this.getCoeff()*this.getX1();
+    }
 }
