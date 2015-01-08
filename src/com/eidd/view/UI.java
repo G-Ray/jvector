@@ -6,9 +6,10 @@ import com.eidd.graphics.Point;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -29,7 +30,6 @@ public class UI extends JFrame implements ChangeListener {
     private ArrayList<Graphic> graphics;
     private ArrayList<Graphic> selections;
     private Graphic curGraphic;
-    private JColorChooser jColorChooser;
 
     private double scaleFactor = 1;
 
@@ -43,12 +43,12 @@ public class UI extends JFrame implements ChangeListener {
         selections = new ArrayList<Graphic>();
         curGraphic = new Point();
 
-        setTitle("Jvector");
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setPreferredSize(new Dimension(1280, 800));
-        setVisible(true);
+        ColorChooser.getjColorChooser().getSelectionModel().addChangeListener(this);
 
-        JMenuBar menu = new JMenuBar();
+        setTitle("Jvector");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setPreferredSize(new Dimension(1280, 800));
+
         canvas = new Canvas();
 
         saveBtn = new JButton("Save");
@@ -60,7 +60,29 @@ public class UI extends JFrame implements ChangeListener {
         triangleBtn = new JButton("Triangle");
         circleBtn = new JButton("Circle");
         fillBtn = new JButton("Fill/Unfill");
-        jColorChooser = new JColorChooser();
+
+        try {
+            Image img = ImageIO.read(getClass().getResource("/icons/floppy-o.png"));
+            saveBtn.setIcon(new ImageIcon(img));
+            img = ImageIO.read(getClass().getResource("/icons/folder-open.png"));
+            loadBtn.setIcon(new ImageIcon(img));
+            img = ImageIO.read(getClass().getResource("/icons/circle.png"));
+            pointBtn.setIcon(new ImageIcon(img));
+            img = ImageIO.read(getClass().getResource("/icons/minus.png"));
+            segmentBtn.setIcon(new ImageIcon(img));
+            img = ImageIO.read(getClass().getResource("/icons/arrows-h.png"));
+            lineBtn.setIcon(new ImageIcon(img));
+            img = ImageIO.read(getClass().getResource("/icons/caret-up.png"));
+            triangleBtn.setIcon(new ImageIcon(img));
+            img = ImageIO.read(getClass().getResource("/icons/circle-thin.png"));
+            circleBtn.setIcon(new ImageIcon(img));
+            img = ImageIO.read(getClass().getResource("/icons/hand-o-up.png"));
+            selectBtn.setIcon(new ImageIcon(img));
+            img = ImageIO.read(getClass().getResource("/icons/paint-brush.png"));
+            fillBtn.setIcon(new ImageIcon(img));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         mousePositionLabel = new JLabel();
 
@@ -170,38 +192,43 @@ public class UI extends JFrame implements ChangeListener {
         saveBtn.addActionListener(saveListener);
         loadBtn.addActionListener(loadListener);
         fillBtn.addActionListener(fillListener);
-        jColorChooser.getSelectionModel().addChangeListener(this);
 
-        menu.add(saveBtn);
-        menu.add(loadBtn);
-        menu.add(pointBtn);
-        menu.add(segmentBtn);
-        menu.add(lineBtn);
-        menu.add(triangleBtn);
-        menu.add(circleBtn);
-        menu.add(selectBtn);
-        menu.add(fillBtn);
-        mousePositionLabel.setMinimumSize(new Dimension(50, 20));
-        mousePositionLabel.setPreferredSize(new Dimension(50, 20));
+        JPanel buttons = new JPanel(new GridBagLayout());
+        buttons.setBackground(Color.LIGHT_GRAY);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = GridBagConstraints.RELATIVE;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor=GridBagConstraints.NORTH;
+        gbc.insets = new Insets(3,3,3,3);
+
+        buttons.add(saveBtn, gbc);
+        buttons.add(loadBtn, gbc);
+        buttons.add(pointBtn, gbc);
+        buttons.add(segmentBtn, gbc);
+        buttons.add(lineBtn, gbc);
+        buttons.add(triangleBtn, gbc);
+        buttons.add(circleBtn, gbc);
+
+        gbc.weighty = 1.0;
+        buttons.add(selectBtn, gbc);
+        buttons.add(fillBtn, gbc);
+
         mousePositionLabel.setText("0:0");
-        menu.add(mousePositionLabel);
-
-        jColorChooser.remove(1); // Remove color preview panel
-        jColorChooser.setColor(Color.BLACK);
-
-        menu.add(jColorChooser);
-        setJMenuBar(menu);
+        buttons.add(mousePositionLabel, gbc);
 
         KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         manager.addKeyEventDispatcher(new keyDispatcher());
 
-        setContentPane(canvas);
+        //buttons.setSize(200, 500);
+        add(buttons, BorderLayout.WEST);
+        add(canvas);
     }
 
     @Override
     public void stateChanged(ChangeEvent e) {
         for(Graphic g : selections) {
-            g.setColor(jColorChooser.getColor());
+            g.setColor(ColorChooser.getColor());
         }
         repaint();
     }
@@ -317,8 +344,7 @@ public class UI extends JFrame implements ChangeListener {
                         }
                         else if(((Triangle) g).getP2().intersect(x, y)) {
                             ((Triangle) g).setP2(new Point(x, y));
-                        }
-                        else if(((Triangle) g).getP3().intersect(x, y)) {
+                        } else if(((Triangle) g).getP3().intersect(x, y)) {
                             ((Triangle) g).setP3(new Point(x, y));
                         }
                     }
@@ -333,7 +359,7 @@ public class UI extends JFrame implements ChangeListener {
             mousePositionLabel.setText(Integer.toString(mouseEvent.getX()) + ":" + Integer.toString(mouseEvent.getY()));
 
             if(curGraphic != null) {
-                curGraphic.setColor(jColorChooser.getColor());
+                curGraphic.setColor(ColorChooser.getColor());
 
                 // Point
                 if (curGraphic instanceof Point) ((Point) curGraphic).setLocation(mouseEvent.getX(), mouseEvent.getY());
@@ -383,7 +409,7 @@ public class UI extends JFrame implements ChangeListener {
             lastPos = mouseEvent.getPoint();
 
             if(curGraphic != null) {
-                curGraphic.setColor(jColorChooser.getColor());
+                curGraphic.setColor(ColorChooser.getColor());
 
                 if (curGraphic instanceof Point) {
                     graphics.add(curGraphic);

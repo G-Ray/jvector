@@ -1,6 +1,7 @@
 package com.eidd;
 
 import com.eidd.graphics.Graphic;
+import com.eidd.view.ColorChooser;
 import com.eidd.view.UI;
 import javax.swing.SwingUtilities;
 import java.io.*;
@@ -11,9 +12,13 @@ public class Jvector {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                ColorChooser colorChooser = new ColorChooser();
                 UI view = new UI();
+                colorChooser.pack();
+                colorChooser.setVisible(true);
                 view.pack();
                 view.setVisible(true);
+                colorChooser.toFront();
             }
         });
     }
