@@ -330,15 +330,14 @@ public class UI extends JFrame implements ChangeListener {
                     if(g instanceof Circle) {
                         if(((Circle) g).getP1().intersect(x, y)) {
                             ((Circle) g).setP1(new Point(x, y));
-                            System.out.println(mouseEvent.getX() - (int) lastPos.getX());
                             int x2 = ((Circle) g).getP2().getX() + (x - (int) lastPos.getX());
                             int y2 = ((Circle) g).getP2().getY() + (y - (int) lastPos.getY());
+                            System.out.println(x - (int) lastPos.getX());
                             ((Circle) g).setP2(new Point(x2, y2));
                         }
                         if(((Circle) g).getP2().intersect(x, y)) {
                             ((Circle) g).setP2(new Point(x, y));
                         }
-                        lastPos = new java.awt.Point(x, y);
                     }
                     if(g instanceof Segment) {
                         if(((Segment) g).getP1().intersect(x, y)) {
@@ -389,8 +388,12 @@ public class UI extends JFrame implements ChangeListener {
 
         @Override
         public void mouseClicked(MouseEvent mouseEvent) {
+            if(SwingUtilities.isRightMouseButton(mouseEvent)) {
+                curGraphic = null;
+            }
+
             // select detection
-            if(curGraphic == null && multiSelect) {
+            if(multiSelect) {
                 boolean found = false;
                 for (Graphic g : graphics) {
                     if(g.intersect(mouseEvent.getX(), mouseEvent.getY())) {
@@ -401,7 +404,7 @@ public class UI extends JFrame implements ChangeListener {
                 if (!found) selections.clear();
             }
 
-            if(curGraphic == null && !multiSelect) {
+            if(!multiSelect) {
                 boolean found = false;
                 for (Graphic g : graphics) {
                     if(g.intersect(mouseEvent.getX(), mouseEvent.getY())) {
@@ -412,12 +415,17 @@ public class UI extends JFrame implements ChangeListener {
                 }
                 if(!found) selections.clear();
             }
+
             repaint();
         }
 
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
             lastPos = mouseEvent.getPoint();
+
+            if(!SwingUtilities.isLeftMouseButton(mouseEvent)) {
+                return;
+            }
 
             if(curGraphic != null) {
                 curGraphic.setColor(ColorChooser.getColor());
@@ -452,8 +460,6 @@ public class UI extends JFrame implements ChangeListener {
                     graphics.add(curGraphic);
                 }
             }
-
-
 
             repaint();
         }
