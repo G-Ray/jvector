@@ -250,21 +250,14 @@ public class UI extends JFrame implements ChangeListener {
                     repaint();
                 }
                 if(e.getKeyCode() == KeyEvent.VK_I) {
-                    for (Graphic h : selections){
-                        int k=selections.size();
-                        int m=0;
-                        int n=0;
-                        for (int l=0; l<k; l++){
-                            if(selections.get(l) instanceof Point) {
-                                m= m + ((Point) selections.get(l)).getX();
-                                n= n + ((Point) selections.get(l)).getY();
-                            }else {
-                                System.out.println("Il n'y a pas que des points!");
-                            }
-                        }
-                        graphics.add(new Point(m/k,n/k));
-                        repaint();
+                    int m = 0;
+                    int n = 0;
+                    for (Graphic g : selections){
+                        if(!(g instanceof Point)) return false; //there is not only points
+                        m += ((Point) g).getX();
+                        n += ((Point) g).getY();
                     }
+                    graphics.add(new Point(m/selections.size(), n/selections.size()));
                     repaint();
                 }
                 if(e.getKeyCode() == KeyEvent.VK_SUBTRACT) {
