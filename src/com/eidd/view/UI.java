@@ -135,7 +135,6 @@ public class UI extends JFrame implements ChangeListener {
         ActionListener pointListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("point");
                 curGraphic = new Point();
                 selections.clear();
                 repaint();
@@ -145,7 +144,6 @@ public class UI extends JFrame implements ChangeListener {
         ActionListener segmentListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("point");
                 curGraphic = new Segment();
                 selections.clear();
                 repaint();
@@ -155,7 +153,6 @@ public class UI extends JFrame implements ChangeListener {
         ActionListener lineListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("point");
                 curGraphic = new Line();
                 selections.clear();
                 repaint();
@@ -165,7 +162,6 @@ public class UI extends JFrame implements ChangeListener {
         ActionListener triangleListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("triangle");
                 curGraphic = new Triangle();
                 selections.clear();
                 repaint();
@@ -175,7 +171,6 @@ public class UI extends JFrame implements ChangeListener {
         ActionListener circleListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("circle");
                 curGraphic = new Circle();
                 selections.clear();
             }
@@ -184,7 +179,6 @@ public class UI extends JFrame implements ChangeListener {
         ActionListener selectListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("point");
                 curGraphic = null; // Select mode
             }
         };
@@ -308,20 +302,12 @@ public class UI extends JFrame implements ChangeListener {
                             y = ((Segment) selections.get(0)).getCoeff() * x + ((Segment) selections.get(0)).getCst();
                             Point p;
                             p = new Point((int) x, (int) y);
-                            System.out.println(x + " " + y);
                             if (((Segment) selections.get(0)).include(p)) {
                                 graphics.add(new Point((int) x, (int) y));
                                 repaint();
-                            } else {
-                                System.out.println("Il n'y a pas de point d'intersection");
                             }
-                        } else {
-                            System.out.println("Il faut selectionner que des droites");
                         }
-                    }else {
-                        System.out.println("Ne selectionner que deux droites");
                     }
-
                 }
                 if(e.getKeyCode() == KeyEvent.VK_I) {
                     int m = 0;
@@ -409,7 +395,6 @@ public class UI extends JFrame implements ChangeListener {
             if(y<0) y=0;
             if(x>this.getWidth()) x=this.getWidth();
             if(y>this.getHeight()) y=this.getHeight();
-            System.out.println(x);
 
             if(curGraphic == null) { // Select mode
                 for (Graphic g : selections) {
@@ -421,7 +406,6 @@ public class UI extends JFrame implements ChangeListener {
                             ((Circle) g).setP1(new Point(x, y));
                             int x2 = ((Circle) g).getP2().getX() + (x - (int) lastPos.getX());
                             int y2 = ((Circle) g).getP2().getY() + (y - (int) lastPos.getY());
-                            System.out.println(x - (int) lastPos.getX());
                             ((Circle) g).setP2(new Point(x2, y2));
                         }
                         if(((Circle) g).getP2().intersect(x, y)) {
