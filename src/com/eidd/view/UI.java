@@ -249,6 +249,24 @@ public class UI extends JFrame implements ChangeListener {
                     scaleFactor += 0.2;
                     repaint();
                 }
+                if(e.getKeyCode() == KeyEvent.VK_I) {
+                    for (Graphic h : selections){
+                        int k=selections.size();
+                        int m=0;
+                        int n=0;
+                        for (int l=0; l<k; l++){
+                            if(selections.get(l) instanceof Point) {
+                                m= m + ((Point) selections.get(l)).getX();
+                                n= n + ((Point) selections.get(l)).getY();
+                            }else {
+                                System.out.println("Il n'y a pas que des points!");
+                            }
+                        }
+                        graphics.add(new Point(m/k,n/k));
+                        repaint();
+                    }
+                    repaint();
+                }
                 if(e.getKeyCode() == KeyEvent.VK_SUBTRACT) {
                     if(scaleFactor > 1) {
                         scaleFactor -= 0.2;
