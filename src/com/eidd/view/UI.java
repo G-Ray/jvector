@@ -324,9 +324,8 @@ public class UI extends JFrame implements ChangeListener {
 
             if(curGraphic == null) { // Select mode
                 for (Graphic g : selections) {
-                    if(g instanceof Point) {
+                    if(g instanceof Point && g.intersect(x, y)) {
                         ((Point) g).setLocation(x, y);
-                        repaint();
                     }
                     if(g instanceof Circle) {
                         if(((Circle) g).getP1().intersect(x, y)) {
@@ -334,13 +333,12 @@ public class UI extends JFrame implements ChangeListener {
                             System.out.println(mouseEvent.getX() - (int) lastPos.getX());
                             int x2 = ((Circle) g).getP2().getX() + (x - (int) lastPos.getX());
                             int y2 = ((Circle) g).getP2().getY() + (y - (int) lastPos.getY());
-
-                            lastPos = new java.awt.Point(x, y);
                             ((Circle) g).setP2(new Point(x2, y2));
                         }
                         if(((Circle) g).getP2().intersect(x, y)) {
                             ((Circle) g).setP2(new Point(x, y));
                         }
+                        lastPos = new java.awt.Point(x, y);
                     }
                     if(g instanceof Segment) {
                         if(((Segment) g).getP1().intersect(x, y)) {
@@ -360,6 +358,7 @@ public class UI extends JFrame implements ChangeListener {
                             ((Triangle) g).setP3(new Point(x, y));
                         }
                     }
+                    lastPos = new java.awt.Point(x, y);
                 }
             }
             repaint();
