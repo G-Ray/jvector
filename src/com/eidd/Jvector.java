@@ -9,6 +9,10 @@ import java.util.ArrayList;
 
 public class Jvector {
 
+    /**
+     * Main
+     * @param args program args(unused)
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -24,6 +28,10 @@ public class Jvector {
         });
     }
 
+    /**
+     * Load the last saved file
+     * @return
+     */
     public static ArrayList load() {
         try {
             FileInputStream fis = new FileInputStream("graphics");
@@ -41,8 +49,11 @@ public class Jvector {
         }
     }
 
+    /**
+     * Save all the graphics to the graphic file
+     * @param graphics
+     */
     public static void save(ArrayList graphics) {
-
         try {
             FileOutputStream fos = new FileOutputStream("graphics");
             ObjectOutputStream oos = new ObjectOutputStream(fos);

@@ -16,6 +16,9 @@ import javax.swing.event.ChangeListener;
 
 public class UI extends JFrame implements ChangeListener {
 
+    /**
+     * UI Buttons
+     */
     private JButton pointBtn,
                     segmentBtn,
                     lineBtn,
@@ -26,31 +29,63 @@ public class UI extends JFrame implements ChangeListener {
                     loadBtn,
                     fillBtn;
 
-    private JLabel mousePositionLabel;
+    /**
+     * Contains all the graphics
+     */
     private ArrayList<Graphic> graphics;
+
+    /**
+     * Contains selected graphics
+     */
     private ArrayList<Graphic> selections;
+
+    /**
+     * Current mouse position
+     */
+    private JLabel mousePositionLabel;
+
+    /**
+     * The current graphic we are manipulating. If null, we are in select mode.
+     */
     private Graphic curGraphic;
 
+    /**
+     * scale factor of the graphics
+     */
     private double scaleFactor = 1;
 
+    /**
+     * Define if we are seleting multiple graphics(true) or only one(false)
+     */
     private boolean multiSelect = false;
 
+    /**
+     * The canvas we are drawing on
+     */
     private final Canvas canvas;
 
+    /**
+     * UI constructor
+     */
     public UI() {
+        // Initialize variables
         graphics = new ArrayList<Graphic>();
-
         selections = new ArrayList<Graphic>();
         curGraphic = new Point();
+        mousePositionLabel = new JLabel();
+        canvas = new Canvas();
+        canvas.setBackground(Color.WHITE);
 
+        // Keep track of color chooser
         ColorChooser.getjColorChooser().getSelectionModel().addChangeListener(this);
 
+        // Set window properties
         setTitle("Jvector");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setMinimumSize(new Dimension(500, 800));
         setPreferredSize(new Dimension(1280, 800));
 
-        canvas = new Canvas();
-
+        // Define our buttons
         saveBtn = new JButton("Save");
         loadBtn = new JButton("Load");
         pointBtn = new JButton("Point");
@@ -61,6 +96,7 @@ public class UI extends JFrame implements ChangeListener {
         circleBtn = new JButton("Circle");
         fillBtn = new JButton("Fill/Unfill");
 
+        // Load icons
         try {
             Image img = ImageIO.read(getClass().getResource("/icons/floppy-o.png"));
             saveBtn.setIcon(new ImageIcon(img));
@@ -84,8 +120,7 @@ public class UI extends JFrame implements ChangeListener {
             e.printStackTrace();
         }
 
-        mousePositionLabel = new JLabel();
-
+        // Enable buttons
         pointBtn.setEnabled(true);
         segmentBtn.setEnabled(true);
         lineBtn.setEnabled(true);
@@ -96,6 +131,7 @@ public class UI extends JFrame implements ChangeListener {
         loadBtn.setEnabled(true);
         fillBtn.setEnabled(true);
 
+        // Set actionlisteners
         ActionListener pointListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -183,6 +219,7 @@ public class UI extends JFrame implements ChangeListener {
             }
         };
 
+        // attach ActionListeners
         pointBtn.addActionListener(pointListener);
         segmentBtn.addActionListener(segmentListener);
         lineBtn.addActionListener(lineListener);
@@ -193,6 +230,7 @@ public class UI extends JFrame implements ChangeListener {
         loadBtn.addActionListener(loadListener);
         fillBtn.addActionListener(fillListener);
 
+        // Define the layout
         JPanel buttons = new JPanel(new GridBagLayout());
         buttons.setBackground(Color.LIGHT_GRAY);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -217,10 +255,10 @@ public class UI extends JFrame implements ChangeListener {
         mousePositionLabel.setText("0:0");
         buttons.add(mousePositionLabel, gbc);
 
+        // Set a keyListener
         KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         manager.addKeyEventDispatcher(new keyDispatcher());
 
-        canvas.setBackground(Color.WHITE);
         add(buttons, BorderLayout.WEST);
         add(canvas);
     }
@@ -233,6 +271,9 @@ public class UI extends JFrame implements ChangeListener {
         repaint();
     }
 
+    /**
+     * Custom keyEventDispatcher
+     */
     private class keyDispatcher implements KeyEventDispatcher {
         @Override
         public boolean dispatchKeyEvent(KeyEvent e) {
@@ -280,16 +321,29 @@ public class UI extends JFrame implements ChangeListener {
         }
     }
 
+    /**
+     * A canvas based on JPanel
+     */
     private class Canvas extends JPanel implements MouseMotionListener, MouseListener, MouseWheelListener {
 
+        /**
+         * Last mouse position, used to calculate new positions when dragging graphics
+         */
         private java.awt.Point lastPos;
 
+        /**
+         * Canvas constructor
+         */
         public Canvas() {
             addMouseMotionListener(this);
             addMouseListener(this);
             addMouseWheelListener(this);
         }
 
+        /**
+         * Paint method
+         * @param g the graphics context to use for painting
+         */
         public void paint(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;

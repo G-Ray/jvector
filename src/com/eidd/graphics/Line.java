@@ -8,12 +8,17 @@ import java.awt.geom.Line2D;
  */
 public class Line extends Segment {
 
+    /**
+     * Get the slope of the line
+     * @return
+     */
     public double getCoeff() {
         double y = this.getY2() - this.getY1();
         double x = this.getX2() - this.getX1();
         return y/x;
     }
 
+    @Override
     public void draw(Graphics2D g2) {
         if(this.getX2()<0) return;
 
@@ -31,6 +36,7 @@ public class Line extends Segment {
         g2.draw(line);
     }
 
+    @Override
     public void drawPreview(Graphics2D g2) {
         if(this.getX1()<0) return;
         super.p1.draw(g2);
@@ -38,6 +44,7 @@ public class Line extends Segment {
         this.draw(g2);
     }
 
+    @Override
     public boolean intersect(int x, int y) {
         Line2D l = new Line2D.Double(this.getX1(), this.getY1(), this.getX2(), this.getY2());
         return (l.ptLineDist(x, y) < 5);
