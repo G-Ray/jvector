@@ -220,7 +220,6 @@ public class UI extends JFrame implements ChangeListener {
         KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         manager.addKeyEventDispatcher(new keyDispatcher());
 
-        //buttons.setSize(200, 500);
         canvas.setBackground(Color.WHITE);
         add(buttons, BorderLayout.WEST);
         add(canvas);
@@ -269,6 +268,7 @@ public class UI extends JFrame implements ChangeListener {
                 if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
                     multiSelect = true;
                 }
+
             } else if (e.getID() == KeyEvent.KEY_RELEASED) {
                 if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
                     multiSelect = false;
@@ -280,13 +280,14 @@ public class UI extends JFrame implements ChangeListener {
         }
     }
 
-    private class Canvas extends JPanel implements MouseMotionListener, MouseListener {
+    private class Canvas extends JPanel implements MouseMotionListener, MouseListener, MouseWheelListener {
 
         private java.awt.Point lastPos;
 
         public Canvas() {
             addMouseMotionListener(this);
             addMouseListener(this);
+            addMouseWheelListener(this);
         }
 
         public void paint(Graphics g) {
@@ -460,7 +461,6 @@ public class UI extends JFrame implements ChangeListener {
                     graphics.add(curGraphic);
                 }
             }
-
             repaint();
         }
 
@@ -492,6 +492,20 @@ public class UI extends JFrame implements ChangeListener {
         @Override
         public void mouseExited(MouseEvent mouseEvent) {
 
+        }
+
+        @Override
+        public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
+            int notches = mouseWheelEvent.getWheelRotation();
+            if (notches < 0) {
+                scaleFactor += 0.2;
+                repaint();
+            } else {
+                if(scaleFactor > 1) {
+                    scaleFactor -= 0.2;
+                    repaint();
+                }
+            }
         }
     }
 
