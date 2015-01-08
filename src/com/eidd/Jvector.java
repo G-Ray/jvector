@@ -34,7 +34,7 @@ public class Jvector {
      */
     public static ArrayList load() {
         try {
-            FileInputStream fis = new FileInputStream("graphics");
+            FileInputStream fis = new FileInputStream("graphics.save");
             ObjectInputStream ois = new ObjectInputStream(fis);
             ArrayList<Graphic> graphics = (ArrayList<Graphic>) ois.readObject();
             ois.close();
@@ -55,7 +55,7 @@ public class Jvector {
      */
     public static void save(ArrayList graphics) {
         try {
-            FileOutputStream fos = new FileOutputStream("graphics");
+            FileOutputStream fos = new FileOutputStream("graphics.save");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(graphics);
             oos.close();
