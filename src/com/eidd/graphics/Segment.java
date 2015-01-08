@@ -45,9 +45,7 @@ public class Segment extends Graphic {
         return p2;
     }
 
-    public void setP1(Point p1) {
-        this.p1 = p1;
-    }
+    public void setP1(Point p1) {this.p1 = p1;}
     public void setP2(Point p2) {
         this.p2 = p2;
     }
@@ -94,5 +92,38 @@ public class Segment extends Graphic {
     public boolean intersect(int x, int y) {
         Line2D l = new Line2D.Double(this.getX1(), this.getY1(), this.getX2(), this.getY2());
         return (l.ptSegDist(x, y) < 5);
+    }
+
+    public double getCoeff() {
+        double y = this.getY2() - this.getY1();
+        double x = this.getX2() - this.getX1();
+        return y/x;
+    }
+
+    public double getCst(){
+        return this.getY1()-this.getCoeff()*this.getX1();
+    }
+
+    public boolean include(Point p){
+        int x1=this.getX1();
+        int x2=this.getX2();
+        int x=p.getX();
+        if (x1<x2){
+            if(x<=x2 && x>=x1){
+                return true;
+            }else {
+                return false;
+            }
+        }else {
+            if (x1 > x2) {
+                if (x >= x2 && x <= x1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
     }
 }

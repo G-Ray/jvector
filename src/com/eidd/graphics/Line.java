@@ -31,6 +31,8 @@ public class Line extends Segment {
         g2.draw(line);
     }
 
+
+
     public void drawPreview(Graphics2D g2) {
         if(this.getX1()<0) return;
         super.p1.draw(g2);
@@ -41,5 +43,9 @@ public class Line extends Segment {
     public boolean intersect(int x, int y) {
         Line2D l = new Line2D.Double(this.getX1(), this.getY1(), this.getX2(), this.getY2());
         return (l.ptLineDist(x, y) < 5);
+    }
+
+    public double getCst(){
+        return this.getY1()-this.getCoeff()*this.getX1();
     }
 }

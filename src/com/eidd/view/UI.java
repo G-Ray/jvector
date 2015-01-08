@@ -249,6 +249,40 @@ public class UI extends JFrame implements ChangeListener {
                     scaleFactor += 0.2;
                     repaint();
                 }
+                if(e.getKeyCode() == KeyEvent.VK_X) {
+                    double x=0;
+                    double y=0;
+                    if (selections.size()==2){
+                        if (selections.get(0) instanceof Line && selections.get(1) instanceof Line){
+                            x=Math.abs(((Line) selections.get(1)).getCst()-((Line) selections.get(0)).getCst())/Math.abs(((Line) selections.get(1)).getCoeff()-((Line) selections.get(0)).getCoeff());
+                            y=((Line) selections.get(0)).getCoeff()*x+((Line) selections.get(0)).getCst();
+                            Point p;
+                            p = new Point((int) x, (int) y);
+                            Segment s1= (Segment) selections.get(0);
+                            Segment s2= (Segment) selections.get(1);
+                            s1.setP1(p);
+                            s2.setP1(p);
+                            repaint();
+                        }else if (selections.get(0) instanceof Segment && selections.get(1) instanceof Segment) {
+                            x = Math.abs(((Segment) selections.get(1)).getCst() - ((Segment) selections.get(0)).getCst()) / Math.abs(((Segment) selections.get(1)).getCoeff() - ((Segment) selections.get(0)).getCoeff());
+                            y = ((Segment) selections.get(0)).getCoeff() * x + ((Segment) selections.get(0)).getCst();
+                            Point p;
+                            p = new Point((int) x, (int) y);
+                            System.out.println(x + " " + y);
+                            if (((Segment) selections.get(0)).include(p)) {
+                                graphics.add(new Point((int) x, (int) y));
+                                repaint();
+                            } else {
+                                System.out.println("Il n'y a pas de point d'intersection");
+                            }
+                        } else {
+                            System.out.println("Il faut selectionner que des droites");
+                        }
+                    }else {
+                        System.out.println("Ne selectionner que deux droites");
+                    }
+
+                }
                 if(e.getKeyCode() == KeyEvent.VK_I) {
                     int m = 0;
                     int n = 0;
